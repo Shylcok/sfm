@@ -1,4 +1,4 @@
-#source /data/htapp/.virtualenvs/hera/bin/activate
+source /data/suyuan/sfm_env/bin/activate
 #export PYTHONPATH=/data/htapp/hera/
-#export HTAPP_ENV=PROD
-exec python sfm.py --log-file-prefix=/data/htapp/log/hera.log --log-rotate-mode=time --log-rotate-when=midnight $*
+export SFM_ENV=DEV
+exec python sfm.py --log-rotate-mode=time --log-rotate-when=midnight $*
