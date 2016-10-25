@@ -13,6 +13,7 @@
 """
 
 import torndb
+import redis
 from settings import CONFIG
 
 DATABASE = CONFIG['DATABASE']
@@ -22,3 +23,9 @@ db = torndb.Connection('%s:%s' % (DATABASE['HOST'], DATABASE['PORT']),
                        password=DATABASE['PASSWD'], max_idle_time=100,
                        charset='utf8mb4', time_zone="+8:00"
                        )
+
+SMS_REDIS_CONFIG = CONFIG['SMS_REDIS']
+# sms_redis = redis.Redis(host=SMS_REDIS_CONFIG['HOST'], port=SMS_REDIS_CONFIG['PORT'], db=SMS_REDIS_CONFIG['DB'])
+redis_pool = redis.ConnectionPool(host=SMS_REDIS_CONFIG['HOST'], port=SMS_REDIS_CONFIG['PORT'],
+                                  db=SMS_REDIS_CONFIG['DB'])
+sms_redis = redis.Redis(connection_pool=redis_pool)  # 直接建立一个连接池，然后作为参数Redis，这样就可以实现多个Redis实例共享一个连接池

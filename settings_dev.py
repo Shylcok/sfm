@@ -27,15 +27,19 @@ CONFIG = {
         'PASSWD': '123456',
         'NAME': 'sfm',
     },
+    'SMS_REDIS': {  # 短信验证码
+        'HOST': '127.0.0.1',
+        'PORT': 6379,
+        'DB': 4
+    },
 
     'LOG_PATH': './sfm-8089.log',
     'pay': {
-            'app_id': 'app_9CO8q1TGCK00P44G',
-            'api_key': 'sk_live_L0CqXLf1SyfL0GO4a9zv1yHS',
-            },
+        'app_id': 'app_9CO8q1TGCK00P44G',
+        'api_key': 'sk_live_L0CqXLf1SyfL0GO4a9zv1yHS',
+    },
 
     'token_secret_key': 'qksytijhjhhdhha%&*&O&&(*',
     'AESKEY': 'ovgNwKHpqmdOTYgI',
-
 
 }

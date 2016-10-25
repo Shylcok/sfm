@@ -14,9 +14,9 @@
 
 from handler.base_handler import BaseHandler
 from core.handler_decorator import handler_decorator
-import random
 import time
 from settings import *
+import constant
 
 
 class UserHandler(BaseHandler):
@@ -32,41 +32,43 @@ class UserHandler(BaseHandler):
         :param mobile:
         :return:
         """
-        chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        x = random.choice(chars), random.choice(chars), random.choice(chars), random.choice(chars)
-        verifyCode = "".join(x)
-        self.set_cookie('sfm_sms_verify', verifyCode, httponly=True, expires=time.time() + 60 * 15)
-        res = self.context_services.user_service.send_tel_msg(verifyCode, mobile)
+        res = self.context_services.user_service.send_verify_code(mobile)
         return res
 
-    @handler_decorator(perm=0, types={'mobile': str, 'pwd': str}, plain=False, async=False, finished=True)
-    def register(self, mobile, pwd):
+    @handler_decorator(perm=0, types={'mobile': str, 'pwd': str, 'sms_verify': str}, plain=False, async=False,
+                       finished=True)
+    def signup(self, mobile, pwd, sms_verify):
         """
         注册
         :param mobile:
         :param pwd:
         :return:
         """
-        res = self.context_services.user_service.register(mobile, pwd)
+        res = self.context_services.user_service.signup(mobile, pwd, sms_verify)
+        if res['code'] == 0:
+            res = self.signin(mobile, pwd)
+
         return res
 
     @handler_decorator(perm=0, types={'mobile_user_name': str, 'pwd': str}, plain=False, async=False, finished=True)
-    def login(self, mobile_uer_name, pwd):
+    def signin(self, mobile_uer_name, pwd):
         """
         登录
-        :param mobile:
+        :param mobile_uer_name:
         :param pwd:
         :return:
         """
-        res, user_token = self.context_services.user_service.login(mobile_uer_name, pwd)
+        res, user_token = self.context_services.user_service.signin(mobile_uer_name, pwd)
         if res['code'] == 0:
-            self.set_cookie('sfm_user_token', user_token, httponly=True,
-                            expires=time.time() + 60 * 60)  # 安全cookie 60分钟, js 无法获取该cookie
+            self.set_cookie(constant.CONST_COOKIE_USER_TOKEN_NAME, user_token, httponly=True,
+                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)  # 安全cookie 60分钟, js 无法获取该cookie
+            self.set_cookie(constant.CONST_COOKIE_USER_NAME, res['user_name'],
+                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)
 
         return res
 
     @handler_decorator(perm=0, types={}, plain=False, async=False, finished=True)
-    def logout(self):
+    def signout(self):
         """
         退出
         :return:
@@ -74,7 +76,7 @@ class UserHandler(BaseHandler):
         self.clear_cookie('sfm_user_token')
         return {'code': 0, 'msg': '注销成功'}
 
-    @handler_decorator(perm=1, types={'user_id': str, 'old_pwd': str, }, plain=False, async=False, finished=True)
+    @handler_decorator(perm=1, types={'user_id': str, 'old_pwd': str,}, plain=False, async=False, finished=True)
     def modify_pwd(self, user_id, old_pwd, new_pwd):
         """
         修改密码

@@ -39,7 +39,7 @@ class OrderHandler(BaseHandler):
         pass
 
 
-    @handler_decorator(perm='', types={'client_ip': str, 'pay_params': dict}, plain=False, async=False, finished=True)
+    @handler_decorator(perm=0, types={'client_ip': str, 'pay_params': dict}, plain=False, async=False, finished=True)
     def pay(self, client_ip, pay_params):
         """
         订单支付

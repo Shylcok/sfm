@@ -37,6 +37,9 @@ Tornado使用type参数进行基本的参数类型验证，当不合适的类型
 因此，我们允许一个整数的port参数作为options.port来访问程序。如果用户没有指定值，则默认为8089
 """
 define('port', default=CONFIG['HTTP']['PORT'], help='http server port', type=int)
-define('log_file_prefix', default=CONFIG['LOG_PATH'], help='log path', type=str)
+define('log_file_prefix', default=CONFIG['LOG_PATH'], help='log path',
+       type=str)  # tornado 自带来log_file_prefix参数,可以默认设置为CINFIG中参数,或者命令行传入
 parse_command_line()
 CONFIG['HTTP']['PORT'] = options.port  # 最后会使用CONFIG中的参数
+
+

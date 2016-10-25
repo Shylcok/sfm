@@ -18,6 +18,7 @@ import json
 import logging
 from core.http_exception import *
 from service.user_service import UserService
+import constant
 
 
 class CoreHandler(tornado.web.RequestHandler):
@@ -83,7 +84,12 @@ class CoreHandler(tornado.web.RequestHandler):
         """post arguments"""
         if (request.method == 'POST' and
                     'application/json' in request.headers.get('Content-Type')):
-            request_data.update(json.loads(request.body))
+            try:
+                body_dic = json.loads(request.body)
+            except ValueError, e:
+                self.finish(Http400('传入的参数不匹配合法的json字符串'))
+                return
+            request_data.update(body_dic)
         elif request.body_arguments:
             request_data.update(request.body_arguments)
         """url arguments reconstruct"""
@@ -99,7 +105,7 @@ class CoreHandler(tornado.web.RequestHandler):
         """权限验证"""
         if self._check_perm(rest_spec['perm']) is False:  # 接口没有开发权限
             # 接口需要用户权限
-            sfm_user_token = self.get_cookie('sfm_user_token')
+            sfm_user_token = self.get_cookie(constant.CONST_COOKIE_USER_TOKEN_NAME)
             user_token_dic = UserService._decrypt(sfm_user_token)
             if not user_token_dic:
                 self.finish(Http401('未登录'))
@@ -130,7 +136,7 @@ class CoreHandler(tornado.web.RequestHandler):
             if type(value) is not item['type']:
                 value = item['type'](value)
 
-            item[name] = value
+            params[name] = value
 
         """执行"""
         if rest_spec['async']:

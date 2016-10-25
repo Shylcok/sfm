@@ -21,3 +21,4 @@ class BaseService(object):
     只会执行一次
     """
     context_repos = Repos()
+
