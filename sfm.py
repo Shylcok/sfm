@@ -31,6 +31,7 @@ class Application(tornado.web.Application):
         url_patterns = [
             (r'/api/order/.*', OrderHandler),
             (r'/api/user/.*', UserHandler),
+            (r'/api/cart/.*', CartHandler),
             (r'/api/webhooks/.*', WebhookHandler),
         ]
         settings = {

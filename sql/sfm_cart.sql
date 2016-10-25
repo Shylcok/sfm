@@ -18,16 +18,16 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
---  Table structure for `sfm_shopping_cart` 购物车
+--  Table structure for `sfm_cart` 购物车
 -- ----------------------------
-DROP TABLE IF EXISTS `sfm_shopping_cart`;
-CREATE TABLE `sfm_shopping_cart` (
+DROP TABLE IF EXISTS `sfm_cart`;
+CREATE TABLE `sfm_cart` (
   `id` int(10) unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
   `user_id` varchar(32) COMMENT '用户id',
-  `sku_id` varchar(32) COMMENT '商品id',
+  `sku_id` varchar(32) COMMENT '商品sku_id',
   `sku_count` int(10) COMMENT '该sku数量',
   `time` int(11) COMMENT '更新时间',
-  UNIQUE KEY `user_id` (`user_id`) COMMENT '用户id'
+  UNIQUE index `user_id` (`user_id`, `sku_id`) COMMENT '用户id skuid索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车表';
 
 SET FOREIGN_KEY_CHECKS = 1;

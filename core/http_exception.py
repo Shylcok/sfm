@@ -58,6 +58,9 @@ def Http200(data):
     else:
         status_code = 200
 
+    if 'data' in data:
+        data = data['data']
+
     return Http(status_code, code, msg,  data)
 
 

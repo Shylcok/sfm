@@ -13,11 +13,16 @@
 """
 
 from user_repo import UserRepo
+from address_repo import AddressRepo
+from cart_repo import CartRepo
 from conn import sms_redis
 
 
 class Repos(object):
     _user_repo = UserRepo()
+    _address_repo = AddressRepo()
+    _cart_repo = CartRepo()
+
     _sms_redis = sms_redis
 
     @property
@@ -27,3 +32,11 @@ class Repos(object):
     @property
     def sms_redis(self):
         return self._sms_redis
+
+    @property
+    def address_repo(self):
+        return self._address_repo
+
+    @property
+    def cart_repo(self):
+        return self._cart_repo

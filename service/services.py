@@ -13,12 +13,14 @@
 """
 
 from user_service import UserService
+from cart_service import CartService
 from order_service import OrderService
 from pay_service import PayService
 from webhooks_service import WebhooksService
 
 class Services(object):
     _user_service = UserService()
+    _cart_service = CartService()
     _order_service = OrderService()
     _pay_service = PayService()
     _webhooks_service = WebhooksService()
@@ -26,6 +28,10 @@ class Services(object):
     @property
     def user_service(self):
         return self._user_service
+
+    @property
+    def cart_service(self):
+        return self._cart_service
 
     @property
     def order_service(self):

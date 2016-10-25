@@ -14,4 +14,5 @@
 
 from order_handler import OrderHandler
 from user_handler import UserHandler
+from cart_handler import CartHandler
 from webhooks_handler import WebhookHandler

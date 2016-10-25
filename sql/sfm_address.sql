@@ -26,9 +26,8 @@ CREATE TABLE `sfm_address` (
   `user_id` varchar(32) NOT NULL COMMENT '用户id',
   `name` varchar(60) COMMENT '收件人',
   `mobile` varchar(32) DEFAULT '' COMMENT '联系电话',
-  `address` varchar(128) DEFAULT '' COMMENT '收件地址',
-  `person_number` varchar(60) DEFAULT '' COMMENT '身份证号码',
-  `is_default` tinyint(4) DEFAULT 0 COMMENT '是否是默认地址'
+  `address` varchar(500) DEFAULT '' COMMENT '收件地址',
+  `is_default` tinyint(4) DEFAULT 0 COMMENT '是否是默认地址 0是默认 1 是非默认'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收货人地址表';
 
 SET FOREIGN_KEY_CHECKS = 1;

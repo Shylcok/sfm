@@ -115,5 +115,74 @@
 -	【权限】U
 
 
+###订单系统接口列表
+
+####1.获取收货地址
+	/api/order/get_address
+-	【权限】U
+-	【说明】
+
+	>登录后获取该用户下的所有收货地址，不需要参数
+-	【参数】
+
+####2.添加收货地址
+	/api/order/add_address
+-	【权限】U
+-	【说明】
+
+	>is_default 为1表示默认地址，0表示非默认地址
+-	【参数】
+
+		{
+		  "address_info": {
+		    "name": "suyuan",
+		    "mobile": "13636672480",
+		    "address": "江苏省扬州市",
+		    "is_default": 1
+		  }
+		}
+
+		
+####3.更新收货地址
+	/api/order/update_address
+-	【权限】U
+-	【说明】
+
+	>id为收货地址的主键id
+-	【参数】
+
+		{
+		  "id":1,
+		  "address_info": {
+		    "name": "suyuan",
+		    "mobile": "13636672480",
+		    "address": "江苏省扬州市1",
+		    "is_default": 1
+		  }
+		}
+		
+####4.删除收货地址
+	/api/order/delete_address
+-	【权限】U
+-	【说明】
+
+	>id为收货地址的主键id
+-	【参数】
+
+		{
+		  "id":1
+		}
+		
+####5.设置默认收货地址
+	/api/order/set_default
+-	【权限】U
+-	【说明】
+
+	>id为收货地址的主键id
+-	【参数】
+
+		{
+		  "id":1
+		}
 
 
