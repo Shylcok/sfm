@@ -13,6 +13,7 @@
 """
 import json
 
+
 class CoreException(Exception):
     def __init__(self, code, msg):
         self.code = code
@@ -25,8 +26,8 @@ class CoreException(Exception):
 class Http(Exception):
     def __init__(self, status_code, code, msg, data=None):
         # type: (object, object, object) -> object
-        self.status_code = status_code # http 状态码
-        self.code = code # 接口定义的返回状态
+        self.status_code = status_code  # http 状态码
+        self.code = code  # 接口定义的返回状态
         self.msg = msg
         self.data = data
 
@@ -40,7 +41,6 @@ class Http(Exception):
         # res = {'code': self.code, 'sys': self.sys, 'emsg': self.emsg, }
         dict = self.convert_to_dict()
         return json.dumps(dict)
-
 
 
 def Http200(data):
@@ -61,21 +61,23 @@ def Http200(data):
     if 'data' in data:
         data = data['data']
 
-    return Http(status_code, code, msg,  data)
+    return Http(status_code, code, msg, data)
 
 
 def Http400(data):
     return Http(400, 400, u'(错误请求)服务器不理解请求的语法', data)
 
+
 def Http401(data):
     return Http(401, 401, u'(未授权)请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。', data)
+
 
 def Http403(data):
     return Http(403, 403, u'(禁止)服务器拒绝请求。', data)
 
+
 def Http404(data):
     return Http(404, 404, u'(未找到)服务器找不到请求的网页。', data)
-
 
 
 E_CORE_MISSING_ARGUMENT = 100

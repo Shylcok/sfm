@@ -4,3 +4,4 @@ pip install mysql-python
 pip install Crypto
 pip install pycrypto
 pip install pingpp
+pip install redis

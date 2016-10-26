@@ -12,13 +12,6 @@
 @time: 16/10/12 下午2:15
 """
 
-from lib.sshtunnel import SSHTunnelForwarder
-
-with SSHTunnelForwarder(
-         ('sshhost.domain.com', 22),    #B机器的配置
-         ssh_password="sshpasswd",
-         ssh_username="sshusername",
-         remote_bind_address=('mysqlhost.domain.com', 3306)) as server:  #A机器的配置  
 
 CONFIG = {
     'DEBUG': False,
@@ -29,7 +22,7 @@ CONFIG = {
     },
 
     'DATABASE': {
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': 3306,
         'USER': 'root',
         'PASSWD': '123456',
