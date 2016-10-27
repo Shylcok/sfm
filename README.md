@@ -28,6 +28,11 @@
 		
 		T: 游客权限
 		U: 用户权限
+-	8.前端调试需要设置host，便于跨子域名设置cookie
+
+		vi /etc/hosts   (mac)
+		127.0.0.1       www.sfm.com
+		139.224.44.238  api.sfm.com
 
 ##2.返回状态说明
 	状态码									含义

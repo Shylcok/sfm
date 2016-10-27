@@ -41,7 +41,7 @@ class CoreHandler(tornado.web.RequestHandler):
         else:
             host = '*'
         self.set_header('Access-Control-Allow-Origin', host)
-        self.set_header('Access-Control-Allow-Credentials', 'true')
+        self.set_header('Access-Control-Allow-Credentials', 'true')  # 跨子域名访问
         self.set_header('Access-Control-Allow-Methods', 'POST')
         self.set_header('Access-Control-Allow-Headers',
                         'X-Requested-With, Content-Type')
@@ -55,6 +55,13 @@ class CoreHandler(tornado.web.RequestHandler):
         res = str(http)
         self._set_cors()
         super(CoreHandler, self).finish(res)
+
+    def set_cookie(self, name, value, domain=None, expires=None, path="/",
+                   expires_days=None, **kwargs):
+        host = self.request.headers['Origin']
+        domain = host[11:18]  # 临时设置cookie作用域名
+        return super(CoreHandler, self).set_cookie(name, value, domain, expires, path,
+                                                   expires_days, **kwargs)
 
     def options(self, *args, **kwargs):
         self.finish('')
