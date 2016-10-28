@@ -44,6 +44,10 @@ class UserService(BaseService):
         return user_info
 
     def send_verify_code(self, mobile):
+        user_info = self.context_repos.user_repo.select_by_mobile(mobile)
+        if user_info is not None:
+            return {'code': 117, 'msg': '该手机号码已经注册'}
+
         chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         x = random.choice(chars), random.choice(chars), random.choice(chars), random.choice(chars)
         verify_code = "".join(x)

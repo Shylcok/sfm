@@ -44,7 +44,7 @@ class Http(Exception):
 
 
 def Http200(data):
-    if 'code' in data:
+    if isinstance(data, dict) and 'code' in data:
         code = data['code']
         msg = data['msg']
         data.pop('code')
@@ -53,12 +53,12 @@ def Http200(data):
         code = 0
         msg = u'http请求成功'
 
-    if 'status_code' in data:
+    if isinstance(data, dict) and 'status_code' in data:
         status_code = data['status_code']
     else:
         status_code = 200
 
-    if 'data' in data:
+    if isinstance(data, dict) and 'data' in data:
         data = data['data']
 
     return Http(status_code, code, msg, data)

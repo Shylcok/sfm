@@ -26,8 +26,15 @@ class CartRepo(BaseRepo):
     def select_by_user_id(self, user_id):
         sql = """
             select * from {} WHERE user_id=%s
-        """
+        """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id)
+        return res
+
+    def select_by_user_id_sku_id(self, user_id, sku_id):
+        sql = """
+            select * from {} WHERE user_id=%s and sku_id=%s;
+        """.format(self.TABLE_NAME)
+        res = self.db.get(sql, user_id, sku_id)
         return res
 
     def insert(self, user_id, sku_id, sku_count):
@@ -37,23 +44,25 @@ class CartRepo(BaseRepo):
         res = self.db.execute_rowcount(sql, user_id, sku_id, sku_count, time.time())
         return res
 
-    def update(self, id, sku_count):
+    def update(self, user_id, sku_id, sku_count):
         sql = """
-            update {} set sku_count=%s WHERE id=%s
+            update {} set sku_count=%s WHERE user_id=%s and sku_id=%s
         """.format(self.TABLE_NAME)
-        res = self.db.execute_rowcount(sql, sku_count, id)
+        res = self.db.execute_rowcount(sql, sku_count, user_id, sku_id)
         return res
 
-    def delete(self, id):
+    def delete(self, user_id, sku_id):
         sql = """
-            delete from {} WHERE id=%s``
+            delete from {} WHERE user_id=%s and sku_id=%s
         """.format(self.TABLE_NAME)
-        res = self.db.execute_rowcount(sql, id)
+        res = self.db.execute_rowcount(sql, user_id, sku_id)
         return res
 
     def count(self, user_id):
         sql = """
-            select * from {} WHERE user_id=%s
+            select sum(sku_count) as sum from {} WHERE user_id=%s
         """.format(self.TABLE_NAME)
-        res = self.db.execute_rowcount(sql, user_id)
-        return res
+        res = self.db.get(sql, user_id)['sum']
+        if res is None:
+            return 0
+        return int(res.real)

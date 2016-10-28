@@ -16,7 +16,7 @@ from core.handler_decorator import handler_decorator
 
 
 class OrderHandler(BaseHandler):
-    """-------------前端用户接口----------------"""
+    """-------------收货地址----------------"""
 
     @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=False, finished=True)
     def get_address(self, user_id):
@@ -73,7 +73,10 @@ class OrderHandler(BaseHandler):
         res = self.context_services.order_service.set_default(user_id, id)
         return res
 
+    """------------------订单操作--------------------"""
 
+    @handler_decorator(perm='', types={'user_id': str, 'data': dict}, plain=False, async=False, finished=True)
+    def prepare_order(self, user_id, data):
 
 
     @handler_decorator(perm='', types={'user_id': str}, plain=False, async=False, finished=True)

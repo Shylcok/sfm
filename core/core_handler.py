@@ -58,8 +58,9 @@ class CoreHandler(tornado.web.RequestHandler):
 
     def set_cookie(self, name, value, domain=None, expires=None, path="/",
                    expires_days=None, **kwargs):
-        host = self.request.headers['Origin']
-        domain = host[11:18]  # 临时设置cookie作用域名
+        if 'Origin' in self.request.headers:
+            host = self.request.headers['Origin']
+            domain = host[11:18]  # 临时设置cookie作用域名
         return super(CoreHandler, self).set_cookie(name, value, domain, expires, path,
                                                    expires_days, **kwargs)
 
