@@ -13,6 +13,7 @@
 """
 
 from base_handler import *
+from tornado import gen
 
 
 class CartHandler(BaseHandler):
@@ -31,15 +32,16 @@ class CartHandler(BaseHandler):
         res = self.context_services.cart_service.add_cart(user_id, sku_id, sku_inc_count)
         return res
 
-    @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=False, finished=True)
+    @gen.coroutine
+    @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=True, finished=True)
     def cart_list(self, user_id):
         """
         购物车列表
         :param user_id:
         :return:
         """
-        res = self.context_services.cart_service.list(user_id)
-        return res
+        res = yield self.context_services.cart_service.list(user_id)
+        raise gen.Return(res)
 
     @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=False, finished=True)
     def cart_count(self, user_id):

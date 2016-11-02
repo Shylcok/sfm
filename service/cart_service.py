@@ -13,13 +13,41 @@
 """
 
 from base_service import BaseService
+import tornado.httpclient
+from settings import CONFIG
+import json
+import tornado.gen
+import tornado
+from tornado.concurrent import run_on_executor
+from utility.urlRequest import UrlRequest
+import logging
 
 
 class CartService(BaseService):
 
+    @tornado.gen.coroutine
     def list(self, user_id):
-        res = self.context_repos.cart_repo.select_by_user_id(user_id)
-        return res
+        cart_lists = self.context_repos.cart_repo.select_by_user_id(user_id)
+        for cart in cart_lists:
+            sku_id = cart['sku_id']
+            sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
+            if sku_info:
+                cart['sku_info'] = sku_info
+            else:
+                logging.error(u'不存在的商品sku_id=%s' % sku_id)
+
+        raise tornado.gen.Return(cart_lists)
+    #
+    # @run_on_executor
+    # def list(self, user_id):
+    #     cart_lists = self.context_repos.cart_repo.select_by_user_id(user_id)
+    #     for cart in cart_lists:
+    #         logging.info('sku_url:' + CONFIG['sku_url'] + cart['sku_id'])
+    #         response = UrlRequest().get(CONFIG['sku_url'] + cart['sku_id'])
+    #         body_dic = json.loads(response.body)
+    #         cart['sku_info'] = body_dic
+    #
+    #     return cart_lists
 
     def add_cart(self, user_id, sku_id, sku_inc_count):
         cart_sku_info = self.context_repos.cart_repo.select_by_user_id_sku_id(user_id, sku_id)

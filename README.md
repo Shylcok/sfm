@@ -242,4 +242,30 @@
 		  "sku_id":"1",
 		  "sku_count":1
 		}
+		
+###订单接口列表
 
+####1.准备订单
+	/api/order/prepare_order
+-	【权限】U
+-	【说明】
+- 	【参数】
+
+		{
+		  "order_type": "cart", 
+		  "cart_list": [
+		  					{'cart_id':'2'},
+		  					{'cart_id':'18'],
+		  "sku_list": [
+		  				{'sku_id':'ad561','sku_count':1},
+		  				{'sku_id':'ad521','sku_count':1},
+		  				 ],
+		  "counpon_code": ""
+		}
+	
+	> order_type:"cart"从购物车到达，cart_list中为cart_id列表 或者"sku"从商详到达，sku_list为sku列表
+	
+	
+	
+	
+	

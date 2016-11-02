@@ -15,13 +15,16 @@
 from user_repo import UserRepo
 from address_repo import AddressRepo
 from cart_repo import CartRepo
+from external_repo import ExternalRepo
 from conn import sms_redis
+
 
 
 class Repos(object):
     _user_repo = UserRepo()
     _address_repo = AddressRepo()
     _cart_repo = CartRepo()
+    _external_repo = ExternalRepo()
 
     _sms_redis = sms_redis
 
@@ -40,3 +43,7 @@ class Repos(object):
     @property
     def cart_repo(self):
         return self._cart_repo
+
+    @property
+    def expernal_repo(self):
+        return self._external_repo

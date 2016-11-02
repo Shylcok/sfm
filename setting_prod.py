@@ -43,6 +43,7 @@ CONFIG = {
 
     'token_secret_key': 'qksytijhjhhdhha%&*&O&&(*',
     'AESKEY': 'ovgNwKHpqmdOTYgI',
+    'sku_url': 'http://139.224.44.238:8890/productApi.apiProduct/detail?skuid=',
 
 
 }

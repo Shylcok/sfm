@@ -20,4 +20,3 @@ class UrlRequest(object):
         res_data = urllib2.urlopen(req)
         res = res_data.read()
         return res
-        

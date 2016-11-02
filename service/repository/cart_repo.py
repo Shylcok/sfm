@@ -15,7 +15,7 @@
 from service.repository.base_repo import BaseRepo
 import logging
 import time
-
+from tornado.concurrent import run_on_executor
 
 class CartRepo(BaseRepo):
     TABLE_NAME = 'sfm_cart'
@@ -35,6 +35,14 @@ class CartRepo(BaseRepo):
             select * from {} WHERE user_id=%s and sku_id=%s;
         """.format(self.TABLE_NAME)
         res = self.db.get(sql, user_id, sku_id)
+        return res
+
+    @run_on_executor
+    def select_by_id(self, id):
+        sql = """
+            select * from {} WHERE id=%s;
+        """
+        res = self.db.get(sql, id)
         return res
 
     def insert(self, user_id, sku_id, sku_count):

@@ -13,6 +13,7 @@
 """
 
 from repository import *
+from concurrent.futures import ThreadPoolExecutor
 
 
 class BaseService(object):
@@ -20,5 +21,6 @@ class BaseService(object):
     """
     只会执行一次
     """
+    executor = ThreadPoolExecutor(50)
     context_repos = Repos()
 

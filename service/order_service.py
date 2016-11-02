@@ -13,7 +13,9 @@
 """
 
 from base_service import BaseService
-
+import logging
+from tornado.gen import coroutine
+from tornado import gen
 
 class OrderService(BaseService):
 
@@ -52,11 +54,47 @@ class OrderService(BaseService):
         res = self.context_repos.address_repo.update_by_id_set_default(id)
         return {'code': 0, 'msg': '设置默认地址成功', 'data': res}
 
+    @coroutine
+    def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code, first_pay):
+        order_sku_infos = []
+        order_sku_count = 0 # 商品数量
+        order_sku_amount = 0 # 商品总价
+        credit_amount = 0 # 额度卡透支,为负数
+        ship_amount_= 0 # 运费
+        pay_amount = 0 # 支付价格
+
+        if order_type == 'cart':
+            for cart_id in cart_list:
+                cart_info = yield self.context_repos.cart_repo.select_by_id(cart_id)
+                if cart_info is None:
+                    logging.error('传入不存在的购物车id:%s' % cart_id)
+                else:
+                    sku_id = cart_info['sku_id']
+                    sku_count = cart_info['sku_count']
+                    sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
+                    if sku_info:
+                        order_sku_count = order_sku_count + sku_count
+                        sku_info['order_sku_count'] = sku_count
+                        order_sku_infos.append(sku_info)
+                    else:
+                        logging.error('不存在的商品, sku_id=%s' % sku_id)
+
+        elif order_type == 'sku':
+            for sku in sku_list:
+                sku_id = sku['sku_id']
+                sku_count = sku['sku_count']
+                sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
+                if sku_info:
+                    order_sku_count = order_sku_count + sku_count
+                    sku_info['order_sku_count'] = sku_count
+                    order_sku_infos.append(sku_info)
+                else:
+                    logging.error('不存在的商品, sku_id=%s' % sku_id)
 
 
+        gen.Return(order_sku_infos)
 
 
+        # 计算出首付价格, 额度卡透资价格, 运费, 需要支付的价格
+        # return {'sku_list': '123'}
 
-    def get_user(self, user_id):
-        res = self.context_repos.user_repo.select_by_user_id(user_id)
-        return res
