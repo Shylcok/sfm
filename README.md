@@ -252,18 +252,78 @@
 - 	【参数】
 
 		{
-		  "order_type": "cart", 
-		  "cart_list": [
-		  					{'cart_id':'2'},
-		  					{'cart_id':'18'],
-		  "sku_list": [
-		  				{'sku_id':'ad561','sku_count':1},
-		  				{'sku_id':'ad521','sku_count':1},
-		  				 ],
-		  "counpon_code": ""
+		    "order_type": "cart",
+		    "cart_list": [
+		        {
+		            "cart_id": "2",
+		            "first_price": 10000
+		        },
+		        {
+		            "cart_id": "18",
+		            "first_price": 20000
+		        }
+		    ],
+		    "sku_list": [
+		        {
+		            "sku_id": "ad561",
+		            "sku_count": 1,
+		            "first_price": 10000
+		        },
+		        {
+		            "sku_id": "ad521",
+		            "sku_count": 1,
+		            "first_price": 30000
+		        }
+		    ],
+		    "counpon_code": ""
 		}
 	
-	> order_type:"cart"从购物车到达，cart_list中为cart_id列表 或者"sku"从商详到达，sku_list为sku列表
+	> 所有的价格都以分为单位
+	> order_type:"cart" 表示从购物车到达，cart_list中为cart_id列表，或者"sku"表示从商详到达，sku_list 为sku列表
+	
+####2.提交订单
+	/api/order/commit_order
+-	【权限】U
+-	【说明】
+- 	【参数】
+		
+		{
+		    "address_id": 1,
+		    "user_note": "要正品",
+		    "order_type": "cart",
+		    "cart_list": [
+		        {
+		            "cart_id": 1,
+		            "first_price": 10
+		        },
+		        {
+		            "cart_id": 3,
+		            "first_price": 20
+		        }
+		    ],
+		    "sku_list": [
+		        {
+		            "sku_id": "2",
+		            "sku_count": 1,
+		            "first_price": 10
+		        },
+		        {
+		            "sku_id": "1",
+		            "sku_count": 1,
+		            "first_price": 10
+		        }
+		    ],
+		    "coupon_code": ""
+		}
+	
+	> 参数和准备订单的参数类似
+
+####3.订单列表
+	/api/order/get_order_list
+-	【权限】U
+-	【说明】
+- 	【参数】	
+	
 	
 	
 	

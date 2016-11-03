@@ -13,9 +13,13 @@
 """
 
 from conn import db as DB
+from concurrent.futures import ThreadPoolExecutor
 
 
 class BaseRepo(object):
+
+    executor = ThreadPoolExecutor(50)
+
     """属性装饰器,保证只读"""
     @property
     def db(self):

@@ -41,7 +41,7 @@ class CartRepo(BaseRepo):
     def select_by_id(self, id):
         sql = """
             select * from {} WHERE id=%s;
-        """
+        """.format(self.TABLE_NAME)
         res = self.db.get(sql, id)
         return res
 

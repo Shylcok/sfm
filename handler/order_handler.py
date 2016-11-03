@@ -13,6 +13,8 @@
 """
 from handler.base_handler import BaseHandler
 from core.handler_decorator import handler_decorator
+from tornado.gen import coroutine
+from tornado.gen import Return
 
 
 class OrderHandler(BaseHandler):
@@ -75,8 +77,9 @@ class OrderHandler(BaseHandler):
 
     """------------------订单操作--------------------"""
 
+    @coroutine
     @handler_decorator(perm='', types={'user_id': str, 'order_type': str, 'cart_list': tuple, 'sku_list': tuple,
-                                       'counpon_code': str}, plain=False, async=False, finished=True)
+                                       'counpon_code': str}, plain=False, async=True, finished=True)
     def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
         """
         订单准备
@@ -87,18 +90,20 @@ class OrderHandler(BaseHandler):
         :param counpon_code:
         :return:
         """
-        res = self.context_services.order_service.prepare_order(user_id, order_type, cart_list, sku_list, counpon_code)
-        return res
+        res = yield self.context_services.order_service.prepare_order(user_id, order_type, cart_list, sku_list,
+                                                                      counpon_code)
+        raise Return(res)
 
-    def commit_order(self, user_id, use_balance, address_id, cart_type, pay_type, cart_list, sku_list, user_note, ext,
-                     coupon_code):
+    @coroutine
+    @handler_decorator(perm='', types={'user_id': str, 'address_id': str, 'order_type': str, 'cart_list': tuple,
+                                       'sku_list': tuple, 'user_note': str,
+                                       'counpon_code': str}, plain=False, async=True, finished=True)
+    def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
         """
         提交订单,订单生成到数据库,到达支付页
         :param user_id:
-        :param use_balance:
         :param address_id:
-        :param cart_type: cart, sku
-        :param pay_type:
+        :param order_type: cart, sku
         :param cart_list:
         :param sku_list:
         :param user_note:
@@ -106,6 +111,9 @@ class OrderHandler(BaseHandler):
         :param coupon_code:
         :return:
         """
+        res = yield self.context_services.order_service.commit_order(user_id, address_id, order_type, cart_list,
+                                                                     sku_list, user_note, coupon_code)
+        raise Return(res)
 
     def confirm_order(self, user_id, clientip, platform, order_id):
         """
@@ -131,14 +139,16 @@ class OrderHandler(BaseHandler):
     def pay_now(self, user_id, clientip, platform, order_id, type, use_balance, address_id):
         """获取交易流水号"""
 
-    @handler_decorator(perm='', types={'user_id': str}, plain=False, async=False, finished=True)
+    @coroutine
+    @handler_decorator(perm='', types={'user_id': str}, plain=False, async=True, finished=True)
     def get_order_list(self, user_id):
         """
         获取用户订单列表
         :param user_id:
         :return:
         """
-        pass
+        res = yield self.context_services.order_service.get_order_list(user_id)
+        raise Return(res)
 
     @handler_decorator(perm='', types={'orderno': str}, plain=False, async=False, finished=True)
     def get_order(self, orderno):

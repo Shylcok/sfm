@@ -37,7 +37,7 @@ class CartService(BaseService):
                 logging.error(u'不存在的商品sku_id=%s' % sku_id)
 
         raise tornado.gen.Return(cart_lists)
-    #
+
     # @run_on_executor
     # def list(self, user_id):
     #     cart_lists = self.context_repos.cart_repo.select_by_user_id(user_id)

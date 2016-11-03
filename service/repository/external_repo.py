@@ -17,6 +17,8 @@ from settings import CONFIG
 import json
 from tornado.gen import coroutine
 from tornado import gen
+import traceback
+import logging
 
 class ExternalRepo(object):
 

@@ -27,7 +27,7 @@ CREATE TABLE `sfm_pay` (
   `channel_id` int(10) COMMENT '付款方式 0 微信，1支付宝，3额度卡',
   `channel_water_id` varchar(32) COMMENT '三方流水号',
   `account` varchar(60) COMMENT '付款账户',
-  `amount` decimal COMMENT '支付金额',
+  `amount` int(10) COMMENT '支付金额',
   `order_id` varchar(32) COMMENT '支付对应的订单号',
   `time` int(11) COMMENT '支付时间',
   UNIQUE KEY `water_id` (`water_id`) COMMENT '支付流水索引'

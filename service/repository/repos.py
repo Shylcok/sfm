@@ -16,7 +16,10 @@ from user_repo import UserRepo
 from address_repo import AddressRepo
 from cart_repo import CartRepo
 from external_repo import ExternalRepo
+from order_repo import OrderRepo
+from sku_order_repo import SkuOrderRepo
 from conn import sms_redis
+
 
 
 
@@ -25,6 +28,8 @@ class Repos(object):
     _address_repo = AddressRepo()
     _cart_repo = CartRepo()
     _external_repo = ExternalRepo()
+    _order_repo = OrderRepo()
+    _sku_order_repo = SkuOrderRepo()
 
     _sms_redis = sms_redis
 
@@ -47,3 +52,12 @@ class Repos(object):
     @property
     def expernal_repo(self):
         return self._external_repo
+
+    @property
+    def order_repo(self):
+        return self._order_repo
+
+    @property
+    def sku_order_repo(self):
+        return self._sku_order_repo
+

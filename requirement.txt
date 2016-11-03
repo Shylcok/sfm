@@ -5,3 +5,4 @@ pip install Crypto
 pip install pycrypto
 pip install pingpp
 pip install redis
+pip install futures
