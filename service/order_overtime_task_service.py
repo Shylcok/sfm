@@ -11,6 +11,8 @@
 @file: order_overtime_task_service.py
 @time: 16/11/3 下午11:57
 """
+import sys
+sys.path.append(sys.path[0] + '/../')
 
 from base_service import BaseService
 from constant import *
