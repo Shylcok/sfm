@@ -6,3 +6,5 @@ pip install pycrypto
 pip install pingpp
 pip install redis
 pip install futures
+pip install Celery
+pip install celery-with-redis

@@ -20,7 +20,8 @@ from constant import *
 
 
 class OrderGenerator(BaseService):
-    def __init__(self):
+    def __init__(self, user_id):
+        self.order_id = GENERATOR_ORDER_ID(user_id)
         self.order_sku_count = 0  # 商品数量
         self.order_sku_amount = 0  # 订单商品价格 200
         self.credit_amount = 0  # 额度卡-10
@@ -125,7 +126,7 @@ class OrderService(BaseService):
     @coroutine
     def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
         # 计算出首付价格, 额度卡透资价格, 运费, 需要支付的价格
-        order_info = OrderGenerator()
+        order_info = OrderGenerator(user_id)
 
         if order_type == 'cart':
             yield order_info.add_cart_list(cart_list)
@@ -137,16 +138,14 @@ class OrderService(BaseService):
 
     @coroutine
     def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
-
-        # TODO: 提交订单之前锁库存
         order_info = OrderGenerator()
         if order_type == 'cart':
             yield order_info.add_cart_list(cart_list)
         elif order_type == 'sku':
             yield order_info.add_sku_list(sku_list)
 
-        order_id = GENERATOR_ORDER_ID(user_id)
 
+        # TODO: 提交订单之前锁库存
         last_rowid = self.context_repos.order_repo.insert(order_id, order_info.ship_amount,
                                                           order_info.order_sku_amount, order_info.credit_amount,
                                                           order_info.pay_amount, order_info.order_sku_count, user_id, address_id, user_note)
@@ -167,12 +166,26 @@ class OrderService(BaseService):
 
             self.context_repos.sku_order_repo.insert(order_id, sku_id, sku_count, sku_weight, sku_amount, sku_name,
                                                      sku_image_url, first_price)
-
-        raise gen.Return({'code': 0, 'msg': '订单提交成功'})
+        logging.info('订单提交成功,单号:%s' % order_id)
+        # TODO: 订单放入任务队列, 到期后自动解库存和更新订单状态
+        raise gen.Return({'code': 0, 'msg': '订单提交成功', 'data': order_id})
 
     @coroutine
     def get_order_list(self, user_id):
         res = yield self.context_repos.order_repo.select_by_user_id(user_id)
         raise gen.Return(res)
+
+    @coroutine
+    def get_order_brief_for_pay(self, user_id, order_id):
+        res = yield self.context_repos.order_repo.select_for_pay(user_id, order_id)
+        if res is None:
+            logging.error('订单错误 id=%s, user_id=%s' % (order_id, user_id))
+            raise gen.Return({'code': 134, 'msg': '订单错误'})
+        else:
+            order_brief = {}
+        raise gen.Return(res)
+
+
+
 
 

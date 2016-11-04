@@ -18,7 +18,7 @@ from cart_repo import CartRepo
 from external_repo import ExternalRepo
 from order_repo import OrderRepo
 from sku_order_repo import SkuOrderRepo
-from conn import sms_redis
+from conn import sms_redis, celery_redis
 
 
 
@@ -32,6 +32,7 @@ class Repos(object):
     _sku_order_repo = SkuOrderRepo()
 
     _sms_redis = sms_redis
+    _celery_redis = celery_redis
 
     @property
     def user_repo(self):
@@ -40,6 +41,10 @@ class Repos(object):
     @property
     def sms_redis(self):
         return self._sms_redis
+
+    @property
+    def celery_redis(self):
+        return self._celery_redis
 
     @property
     def address_repo(self):

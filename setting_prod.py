@@ -26,7 +26,11 @@ CONFIG = {
         'PORT': 6379,
         'DB': 4
     },
-
+    'CELERY_REDIS': {  # 订单定时任务消息
+        'HOST': '127.0.0.1',
+        'PORT': 6379,
+        'DB': 5
+    },
     'DATABASE': {
         'HOST': 'localhost',
         'PORT': 3306,

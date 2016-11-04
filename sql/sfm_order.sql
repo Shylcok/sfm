@@ -25,7 +25,7 @@ CREATE TABLE `sfm_order` (
   `id` int(10) unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
   `order_id` varchar(16) NOT NULL COMMENT '订单号',
 
-  `state` int(10) COMMENT '订单状态0未支付订单，1已付款代发货，2已发货，3交易成功，4订单取消，',
+  `state` int(10) COMMENT '订单状态0未支付订单，1已付款代发货，2已发货，3交易成功，4订单取消，5订单过期, 99进入支付状态',
   `ctime` int(11) COMMENT '下单时间',
   `utime` int(11) COMMENT '订单修改时间',
   `overtime` int(11) COMMENT '订单过期时间,',

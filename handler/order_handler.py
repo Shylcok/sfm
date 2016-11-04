@@ -78,7 +78,7 @@ class OrderHandler(BaseHandler):
     """------------------订单操作--------------------"""
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str, 'order_type': str, 'cart_list': tuple, 'sku_list': tuple,
+    @handler_decorator(perm=1, types={'user_id': str, 'order_type': str, 'cart_list': tuple, 'sku_list': tuple,
                                        'counpon_code': str}, plain=False, async=True, finished=True)
     def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
         """
@@ -95,7 +95,7 @@ class OrderHandler(BaseHandler):
         raise Return(res)
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str, 'address_id': str, 'order_type': str, 'cart_list': tuple,
+    @handler_decorator(perm=1, types={'user_id': str, 'address_id': str, 'order_type': str, 'cart_list': tuple,
                                        'sku_list': tuple, 'user_note': str,
                                        'counpon_code': str}, plain=False, async=True, finished=True)
     def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
@@ -113,6 +113,12 @@ class OrderHandler(BaseHandler):
         """
         res = yield self.context_services.order_service.commit_order(user_id, address_id, order_type, cart_list,
                                                                      sku_list, user_note, coupon_code)
+        raise Return(res)
+
+    @coroutine
+    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
+    def get_order_brief_for_pay(self, user_id, order_id):
+        res = yield self.context_services.order_service.get_order_brief_for_pay(user_id, order_id)
         raise Return(res)
 
     def confirm_order(self, user_id, clientip, platform, order_id):

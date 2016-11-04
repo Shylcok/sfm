@@ -24,8 +24,16 @@ db = torndb.Connection('%s:%s' % (DATABASE['HOST'], DATABASE['PORT']),
                        charset='utf8mb4', time_zone="+8:00"
                        )
 
+
+# 验证码 redis 缓存
 SMS_REDIS_CONFIG = CONFIG['SMS_REDIS']
 # sms_redis = redis.Redis(host=SMS_REDIS_CONFIG['HOST'], port=SMS_REDIS_CONFIG['PORT'], db=SMS_REDIS_CONFIG['DB'])
-redis_pool = redis.ConnectionPool(host=SMS_REDIS_CONFIG['HOST'], port=SMS_REDIS_CONFIG['PORT'],
-                                  db=SMS_REDIS_CONFIG['DB'])
-sms_redis = redis.Redis(connection_pool=redis_pool)  # 直接建立一个连接池，然后作为参数Redis，这样就可以实现多个Redis实例共享一个连接池
+sms_redis_pool = redis.ConnectionPool(host=SMS_REDIS_CONFIG['HOST'], port=SMS_REDIS_CONFIG['PORT'],
+                                      db=SMS_REDIS_CONFIG['DB'])
+sms_redis = redis.Redis(connection_pool=sms_redis_pool)  # 直接建立一个连接池，然后作为参数Redis，这样就可以实现多个Redis实例共享一个连接池
+
+# 订单定时任务 redis 缓存
+CELERY_REDIS_CONFIG = CONFIG['CELERY_REDIS']
+celery_redis_pool = redis.ConnectionPool(host=CELERY_REDIS_CONFIG['HOST'], port=CELERY_REDIS_CONFIG['PORT'],
+                                         db=CELERY_REDIS_CONFIG['DB'])
+celery_redis = redis.Redis(connection_pool=celery_redis_pool)  # 直接建立一个连接池，然后作为参数Redis，这样就可以实现多个Redis实例共享一个连接池
