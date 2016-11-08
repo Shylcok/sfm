@@ -19,6 +19,9 @@ import logging
 
 class WebhooksService(BaseService):
 
+    def __init__(self, services):
+        super(WebhooksService, self).__init__(services)
+
     def verify(self, data, sig):
         return PayProcessor().verify(data, sig)
 

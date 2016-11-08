@@ -11,23 +11,40 @@
 @file: tasks.py
 @time: 16/11/4 下午4:16
 """
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 from celery import Celery
-from service.order_overtime_task_service import OrderOvertimeTaskService
+from handler.base_handler import BaseHandler
+from tornado.gen import coroutine
+from tornado.gen import Return
 
 celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-orderOverTime = OrderOvertimeTaskService()
-
 
 @celery.task(bind=True, max_retries=10,
              default_retry_delay=1 * 6)  # bind 表示开启, max_retries 是重新尝试的次数,default_retry_delay 是默认的间隔时间，尝试的时间
 def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失效的任务
     try:
-        logger.info('exec_task_order_overtime order_id=%s' % order_id)
-        orderOverTime.process_over_time(order_id)
+        logger.info('===================> exec_task_order_overtime order_id=%s' % order_id)
+        a = 1/0
+        success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
+        if success is False:
+            logger.error(
+                '<================order_overtime_task_service.process_over_time Failed, order_id=%s' % order_id)
+            raise Return(False)
+        else:
+            logger.info(
+                '<=================order_overtime_task_service.process_over_time Success, order_id=%s' % order_id)
     except Exception as exc:
+        logger.info('exec_task_order_overtime retry, order_id=%s' % order_id)
         raise self.retry(exc=exc, countdown=3)  # 3 秒后继续尝试
+
+
+if __name__ == "__main__":
+    exec_task_order_overtime(1, '119')

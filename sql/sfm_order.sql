@@ -25,7 +25,7 @@ CREATE TABLE `sfm_order` (
   `id` int(10) unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
   `order_id` varchar(16) NOT NULL COMMENT '订单号',
 
-  `state` int(10) COMMENT '订单状态0未支付订单，1已付款代发货，2已发货，3交易成功，4订单取消，5订单过期, 99进入支付状态',
+  `state` int(10) COMMENT '订单状态0未支付订单，1已付款代发货，2已发货，3已收货,订单确认,交易成功，4订单取消，5订单过期, 99进入支付状态',
   `ctime` int(11) COMMENT '下单时间',
   `utime` int(11) COMMENT '订单修改时间',
   `overtime` int(11) COMMENT '订单过期时间,',
@@ -48,6 +48,7 @@ CREATE TABLE `sfm_order` (
   `logistics_id` int(10) COMMENT '物流信息id',
   `weight` float(10) COMMENT '订单重量',
   `status` tinyint(4)  DEFAULT 0 COMMENT '0表示删除',
+  `reason` VARCHAR(500) COMMENT '卖家取消或者退款原因',
   UNIQUE KEY `order_id` (`order_id`) COMMENT '订单索引',
   INDEX `user_id` (`user_id`) COMMENT '用户id索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';

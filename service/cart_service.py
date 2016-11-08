@@ -25,6 +25,9 @@ import logging
 
 class CartService(BaseService):
 
+    def __init__(self, services):
+        super(CartService, self).__init__(services)
+
     @tornado.gen.coroutine
     def list(self, user_id):
         cart_lists = self.context_repos.cart_repo.select_by_user_id(user_id)

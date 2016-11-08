@@ -35,3 +35,25 @@ class ExternalRepo(object):
             raise gen.Return(body_dic['data'])
         else:
             raise gen.Return(False)
+
+    @coroutine
+    def decrease_stock(self, sku_id, sku_count):
+        """
+        锁库存
+        :param sku_id:
+        :param sku_count:
+        :return:
+        """
+        logging.info('===> decrease_stock sku_id=%s, sku_count=%s' % (sku_id, sku_count))
+        raise gen.Return(True)
+
+    @coroutine
+    def increase_stock(self, sku_id, sku_count):
+        """
+        解库存
+        :param sku_id:
+        :param sku_count:
+        :return:
+        """
+        logging.info('===> increase_stock sku_id=%s, sku_count=%s' % (sku_id, sku_count))
+        raise gen.Return(True)

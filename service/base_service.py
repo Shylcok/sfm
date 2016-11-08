@@ -24,3 +24,6 @@ class BaseService(object):
     executor = ThreadPoolExecutor(50)
     context_repos = Repos()
 
+    def __init__(self, services):
+        self.services = services
+

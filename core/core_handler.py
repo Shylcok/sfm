@@ -108,6 +108,7 @@ class CoreHandler(tornado.web.RequestHandler):
         request_data.update(query_arguments)
         """公共参数"""
         request_data.update({'client_ip': self.request.remote_ip})
+
         rest_spec = func.rest_spec  # 获取方法的装饰器参数
 
         """权限验证"""

@@ -14,6 +14,7 @@
 
 import logging
 from base_repo import BaseRepo
+from tornado.concurrent import run_on_executor
 
 
 class AddressRepo(BaseRepo):
@@ -27,6 +28,14 @@ class AddressRepo(BaseRepo):
             select * from {} WHERE user_id=%s ORDER BY is_default DESC
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id)
+        return res
+
+    @run_on_executor
+    def select_by_id(self, id):
+        sql = """
+            select * from {} WHERE id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.get(sql, id)
         return res
 
     def insert(self, user_id, name, mobile, address, is_default):

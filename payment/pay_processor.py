@@ -20,7 +20,7 @@ import os
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
-
+import time
 
 
 class PayProcessor(object):
@@ -31,7 +31,7 @@ class PayProcessor(object):
     @staticmethod
     def build_pay_params(pay_params):
         pay_info = {}
-        pay_info['order_no'] = pay_params['orderno']   # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
+        pay_info['order_no'] = pay_params['order_id']   # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
         pay_info['app'] = dict(id=CONFIG['pay']['app_id'])  # 支付使用的  app 对象的  id
         pay_info['channel'] = pay_params['channel']  # alipay_pc_direct	支付宝 PC 网页支付;wx_pub_qr 微信公众号扫码支付
         pay_info['amount'] = pay_params['amount']  # 订单总金额（必须大于0
@@ -39,6 +39,8 @@ class PayProcessor(object):
         pay_info['client_ip'] = pay_params['client_ip']
         pay_info['subject'] = pay_params['subject']  # 商品的标题，该参数最长为 32 个 Unicode 字符
         pay_info['body'] = pay_params['body']  # 商品的描述信息，该参数最长为 128 个 Unicode 字符
+        pay_info['time_expire'] = str(int(time.time()) + 300) # 订单失效时间
+
         if pay_params['channel'] == 'alipay_pc_direct':
             pay_info['extra'] = dict(
                 success_url=pay_params['success_url']  # 支付成功的回调地址。到达付款成功页面
@@ -53,7 +55,12 @@ class PayProcessor(object):
     def pay(params):
         logging.info('支付参数: ' + str(params))
         response_charge = pingpp.Charge.create(api_key=pingpp.api_key, **params)
-        logging.info('支付返回: ' + str(response_charge))
+        """
+        Ping++ 收到支付请求后返回给你的服务器一个 Charge 对象，我们称这个 Charge 对象为支付凭据;
+        你的服务器需要按照 JSON 字符串格式将支付凭据返回给你的客户端，Ping++ SDK 对此做了相应的处理，
+        你只需要将获得的支付凭据直接传给客户端。客户端接收后使用该支付凭据用于调起支付控件，而支付凭据的传送方式需要你自行实现。
+        """
+        logging.info('Ping++支付凭据: ' + str(response_charge))
         return response_charge
 
     @staticmethod

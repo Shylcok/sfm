@@ -118,52 +118,78 @@ class OrderHandler(BaseHandler):
     @coroutine
     @handler_decorator(perm=1, types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
     def get_order_brief_for_pay(self, user_id, order_id):
-        res = yield self.context_services.order_service.get_order_brief_for_pay(user_id, order_id)
-        raise Return(res)
-
-    def confirm_order(self, user_id, clientip, platform, order_id):
         """
-        订单确认,收获
+        获取支付前的订单简讯
         :param user_id:
-        :param clientip:
-        :param platform:
         :param order_id:
         :return:
         """
+        res = yield self.context_services.order_service.get_order_brief_for_pay(user_id, order_id)
+        raise Return(res)
 
-    def cancel_order(self, user_id, clientip, platform, order_id, reason):
+    @coroutine
+    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
+    def delete_order(self, user_id, order_id):
+        """
+        删除订单
+        :param user_id:
+        :param order_id:
+        :return:
+        """
+        res = yield self.context_services.order_service.delete_order(order_id)
+        raise Return(res)
+
+    @coroutine
+    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
+    def confirm_order(self, user_id, order_id):
+        """
+        订单确认,收获
+        :param user_id:
+        :param order_id:
+        :return:
+        """
+        res = yield self.context_services.order_service.confirm_order(order_id)
+        raise Return(res)
+
+    @coroutine
+    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str, 'reason': str}, plain=False, async=True, finished=True)
+    def cancel_order(self, user_id, order_id, reason):
         """
         取消订单
         :param user_id:
-        :param clientip:
-        :param platform:
         :param order_id:
         :param reason:
         :return:
         """
+        res = yield self.context_services.order_service.cancel_order(order_id, reason)
+        raise Return(res)
 
     def pay_now(self, user_id, clientip, platform, order_id, type, use_balance, address_id):
         """获取交易流水号"""
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str}, plain=False, async=True, finished=True)
-    def get_order_list(self, user_id):
+    @handler_decorator(perm='', types={'user_id': str, 'order_type': str, 'page': int, 'count': int}, plain=False, async=True, finished=True)
+    def get_order_list(self, user_id, order_type, page, count):
         """
         获取用户订单列表
+        :param count:
+        :param page:
+        :param order_type:
         :param user_id:
         :return:
         """
-        res = yield self.context_services.order_service.get_order_list(user_id)
+        res = yield self.context_services.order_service.get_order_list(user_id, order_type, page, count)
         raise Return(res)
 
-    @handler_decorator(perm='', types={'orderno': str}, plain=False, async=False, finished=True)
-    def get_order(self, orderno):
+    @handler_decorator(perm='', types={'order_id': str}, plain=False, async=False, finished=True)
+    def get_order(self, order_id):
         """
         获取订单详情
-        :param orderno:
+        :param order_id:
         :return:
         """
-        pass
+        res = yield self.context_services.order_service.get_order(order_id)
+        raise Return(res)
 
     @handler_decorator(perm=0, types={'client_ip': str, 'pay_params': dict}, plain=False, async=False, finished=True)
     def pay(self, client_ip, pay_params):
@@ -173,7 +199,8 @@ class OrderHandler(BaseHandler):
         :param pay_params:
         :return:
         """
-        pay_params.update({'client_ip': client_ip})
+        # pay_params.update({'client_ip': client_ip})
+        # pay_params.update({'user_id': user_id})
         res = self.context_services.pay_sevice.pay(pay_params)
         return res
 
@@ -194,3 +221,9 @@ class OrderHandler(BaseHandler):
 
     def refund(self, client_ip, refund_params):
         self.context_services.pay_sevice.refund(refund_params)
+
+    @coroutine
+    @handler_decorator(perm='', types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
+    def send_out(self, user_id, order_id):
+        res = yield self.context_services.order_service.send_out(user_id, order_id)
+        raise Return(res)

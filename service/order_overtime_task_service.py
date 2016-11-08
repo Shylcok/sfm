@@ -18,30 +18,43 @@ from base_service import BaseService
 from constant import *
 from celery import Celery
 import logging
+from tornado.gen import coroutine
 
 celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 
 
 class OrderOvertimeTaskService(BaseService):
 
+    def __init__(self, services):
+        super(OrderOvertimeTaskService, self).__init__(services)
+
+    @coroutine
     def process_over_time(self, order_id):
         # 开始支付, check state=0 and set state=99 订单进入支付状态
         # 支付成功, check state=1.5 and set state=1 订单进入成功支付状态
         # 支付异常, check state=1.5 and set state=0 订单进入未支付状态
         # TODO: 订单过期, check state=0 and set state=6 订单过期,
         # 解订单库存
-        logging.info('===========process_over_time, order_id=%s' % order_id)
+        yield self.services.order_service.increase_stocks(order_id)
 
-    # 下单时, 订单进入队列
     def commit_order_celery(self, order_id):
+        """
+        下单时, 订单进入队列
+        :param order_id:
+        :return:
+        """
         push_task_id = celery.send_task('tasks.exec_task_order_overtime'
                                         , [order_id]
                                         , countdown=CONST_ORDER_OVER_DURATION_CELERY)  # 推送消息
         self.context_repos.celery_redis.set(order_id, push_task_id, CONST_ORDER_OVER_DURATION_CELERY)
         logging.info('开始一个新的订单任务, order_id=%s, push_task_id=%s' % (order_id, push_task_id))
 
-    # 支付后, 去除消息队列中的订单
     def after_pay_celery(self, order_id):
+        """
+        支付后, 去除消息队列中的订单
+        :param order_id:
+        :return:
+        """
         push_task_id = self.context_repos.celery_redis.get(order_id)
         celery.control.revoke(push_task_id, terminate=True)
         self.context_repos.celery_redis.delete(order_id)
@@ -49,8 +62,8 @@ class OrderOvertimeTaskService(BaseService):
 
 
 if __name__ == "__main__":
-    service = OrderOvertimeTaskService()
-    service.commit_order_celery('1111')
+    service = OrderOvertimeTaskService(object)
+    service.commit_order_celery('1119')
 
 
 

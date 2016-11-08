@@ -42,11 +42,11 @@
                     pay_params:
                         {
                             channel: channel,
-                            amount: amount,
-                            orderno: '400000001',
-                            subject: '手机', //商品标题
-                            body: '华为手机', //商品描述信息
-                            success_url: 'www.baidu.com' // 支付宝支付成功的回调，可以到支付结果页或者该订单详情页
+//                            amount: amount,
+                            order_id: '400000002',
+//                            subject: '手机', //商品标题
+//                            body: '华为手机', //商品描述信息
+                            success_url: 'www.sfm.com/order/pay_complete?order_id=400000002' // 支付宝支付成功的回调，可以到支付结果页或者该订单详情页
                         }
     }));
 

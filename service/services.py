@@ -16,14 +16,20 @@ from user_service import UserService
 from cart_service import CartService
 from order_service import OrderService
 from pay_service import PayService
+from order_overtime_task_service import OrderOvertimeTaskService
 from webhooks_service import WebhooksService
+import logging
+
 
 class Services(object):
-    _user_service = UserService()
-    _cart_service = CartService()
-    _order_service = OrderService()
-    _pay_service = PayService()
-    _webhooks_service = WebhooksService()
+    def __init__(self):
+        logging.info('=====> init services')
+        self._user_service = UserService(self)
+        self._cart_service = CartService(self)
+        self._order_service = OrderService(self)
+        self._pay_service = PayService(self)
+        self._order_overtime_task_service = OrderOvertimeTaskService(self)
+        self._webhooks_service = WebhooksService(self)
 
     @property
     def user_service(self):
@@ -44,3 +50,7 @@ class Services(object):
     @property
     def webhooks_service(self):
         return self._webhooks_service
+
+    @property
+    def order_overtime_task_service(self):
+        return self._order_overtime_task_service

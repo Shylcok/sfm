@@ -38,7 +38,10 @@ CONFIG = {
         'PORT': 6379,
         'DB': 5
     },
-
+    'MONGODB': {
+        'HOST': '127.0.0.1',
+        'PORT': 27017
+    },
     'LOG_PATH': './sfm-8089.log',
     'pay': {
         'app_id': 'app_9CO8q1TGCK00P44G',

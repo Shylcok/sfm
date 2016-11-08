@@ -1,3 +1,8 @@
+mysql
+redis
+mongodb
+celery
+
 pip install tornado
 pip install torndb
 pip install mysql-python
@@ -8,3 +13,4 @@ pip install redis
 pip install futures
 pip install Celery
 pip install celery-with-redis
+pip install pymongo

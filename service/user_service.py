@@ -25,6 +25,10 @@ AESKEY = CONFIG['AESKEY']
 
 
 class UserService(BaseService):
+
+    def __init__(self, services):
+        super(UserService, self).__init__(services)
+
     @classmethod
     def _encrypt(cls, data):
         data = json.dumps(data)

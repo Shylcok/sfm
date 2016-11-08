@@ -34,20 +34,84 @@ class OrderRepo(BaseRepo):
         return lastrowid
 
     @run_on_executor
-    def select_by_user_id(self, user_id):
+    def select_by_user_id_state(self, user_id, state, page, count):
         sql = """
-            select * from {} where user_id=%s
+            select * from {} where user_id=%s where status=1 and state=%s limit %s,%s
         """.format(self.TABLE_NAME)
-        res = self.db.query(sql, user_id)
+        res = self.db.query(sql, user_id, state, (page-1)*count, count)
+        return res
+
+    @run_on_executor
+    def select_by_user_id_all(self, user_id, page, count):
+        sql = """
+            select * from {} where user_id=%s and status=1 limit %s,%s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, user_id, (page-1)*count, count)
         return res
 
     @run_on_executor
     def select_for_pay(self, user_id, order_id):
-        # 订单未超时, 订单属于用户, 订单未支付状态
+        """订单未超时, 订单属于用户, 订单未支付状态 state=0"""
         sql = """
             select * from {} where user_id=%s and order_id=%s and overtime>%s and state=0
         """.format(self.TABLE_NAME)
         res = self.db.get(sql, user_id, order_id, time.time())
+        return res
+
+    @run_on_executor
+    def delete_order(self, order_id):
+        sql = """
+            update {} set status=0 WHERE order_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, order_id)
+        return res
+
+    @run_on_executor
+    def update_state_2(self, order_id):
+        """
+        发货
+        :param order_id:
+        :return:
+        """
+        sql = """
+            update {} set state=2 where order_id=%s and state=1
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, order_id)
+        return res
+
+    @run_on_executor
+    def update_state_3(self, order_id):
+        """
+        确认收货
+        :param order_id:
+        :return:
+        """
+        sql = """
+            update {} set state=3 where order_id=%s and state=2
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, order_id)
+        return res
+
+    @run_on_executor
+    def update_state_4(self, order_id, reason):
+        """
+        取消订单
+        :param order_id:
+        :param reason:
+        :return:
+        """
+        sql = """
+            update {} set state=4, reason=%s WHERE order_id=%s and state=0
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, reason, order_id)
+        return res
+
+    @run_on_executor
+    def select_by_order_id(self, order_id):
+        sql = """
+            select * from {} where order_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.get(sql, order_id)
         return res
 
     def test(self):

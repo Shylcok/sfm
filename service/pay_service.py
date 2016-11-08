@@ -17,10 +17,16 @@ from base_service import BaseService
 
 from payment.pay_processor import PayProcessor
 
+
 class PayService(BaseService):
+
+    def __init__(self, services):
+        super(PayService, self).__init__(services)
 
     def pay(self, pay_params):
         try:
+            order_id = pay_params['order_id']
+            self.context_repos.order_repo.select_by_order_id
             pay_params = PayProcessor().build_pay_params(pay_params)
             res = PayProcessor().pay(pay_params)
             return res
