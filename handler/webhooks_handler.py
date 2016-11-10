@@ -19,13 +19,30 @@ import json
 
 class WebhookHandler(BaseHandler):
     """
-    订单处理
+    支付回调
     """
 
-    @handler_decorator(perm='', types={},
-                       plain=False, async=False, finished=True)
-    def pingpp(self):
+    def verify(self):
         data = json.loads(self.request.body)
         sig = self.request.headers.get('x-pingplusplus-signature')
-        res = self.context_services.webhooks_service.pingpp(data, sig)
-        return res
+        if sig is None:
+            return True
+        is_verify = self.context_services.webhooks_service.verify(data, sig)
+        if is_verify is False:
+            logging.info('weebhooks验证错误 data:%s, sig: %s' % (str(data), sig))
+        return is_verify
+
+    @handler_decorator(perm=0, types={},
+                       plain=False, async=False, finished=True)
+    def pingpp(self):
+        """
+        支付成功 hook
+        :return:
+        """
+        if self.verify() is False:
+            return {'status_code': 500}
+        else:
+            request_body = json.loads(self.request.body)
+            res = self.context_services.webhooks_service.pingpp(request_body)
+            return res
+

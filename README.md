@@ -414,10 +414,26 @@
 - 	【参数】	
 
 		{
-		  "order_id": "14784316383"
+		  "order_id": "14784316383",
+		  "channel": "alipay_pc_direct",
+		  "success_url": "www.sfm.com/order/pay_complete?order_id=400000002"
 		}
+	
+	> channel = "wx_pub_qr" or "alipay_pc_direct"
+	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 		
 
+
+
+###支付回调接口列表
+
+####1.支付回调
+	/api/webhooks/pingpp
+-	【权限】T
+-	【说明】
+
+	> 必须订单状态state=0，表示下单未支付状态
+- 	【参数】	
 		
 		
 

@@ -67,6 +67,19 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
+    def update_state_1(self, order_id):
+        """
+        付款,回调
+        :param order_id:
+        :return:
+        """
+        sql = """
+            update {} set state=1 where order_id=%s and state=0
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, order_id)
+        return res
+
+    @run_on_executor
     def update_state_2(self, order_id):
         """
         发货
@@ -112,6 +125,14 @@ class OrderRepo(BaseRepo):
             select * from {} where order_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.get(sql, order_id)
+        return res
+
+    @run_on_executor
+    def select_by_order_id_user_id(self, order_id, user_id):
+        sql = """
+            select * from {} where order_id=%s AND user_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.get(sql, order_id, user_id)
         return res
 
     def test(self):

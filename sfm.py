@@ -35,6 +35,7 @@ class Application(tornado.web.Application):
             (r'/api/user/.*', UserHandler),
             (r'/api/cart/.*', CartHandler),
             (r'/api/webhooks/.*', WebhookHandler),
+            (r'/api/static/(.*)', tornado.web.StaticFileHandler, {"path": "statics/"}),
         ]
         settings = {
             "cookie_secret": "bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",

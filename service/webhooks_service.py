@@ -21,25 +21,41 @@ class WebhooksService(BaseService):
 
     def __init__(self, services):
         super(WebhooksService, self).__init__(services)
+        self.channel_ids = {
+            'alipay_pc_direct': 1, # 支付宝
+            'wx_pub_qr': 0, # 额度卡
+            'upacp': 50,
+        }
 
     def verify(self, data, sig):
         return PayProcessor().verify(data, sig)
 
-    def pingpp(self, data, sig):
-        is_verify = self.verify(data, sig)
-        if is_verify:
-            if type == 'charge.succeeded':
-                # TODO: 处理支付成功的逻辑
+    def pingpp(self, request_body):
+        event = request_body
+        event_type = event['type']
+        logging.info('收到webhook:%s' % str(event))
+        if event_type == 'charge.succeeded':
+            """处理支付成功的逻辑"""
 
-                return {'code': 0, 'msg': '付款成功'}
-            elif type == 'refund.succeeded':
-                # TODO: 处理退款成功的逻辑
+            order_data = event['data']['object']
 
-                return {'code': 0, 'msg': '退款成功'}
-            else:
-                logging.info('webhooks错误: %s' % str(data))
+            order_id = order_data['order_no']
+            amount = order_data['amount']
+            water_id = order_data['transaction_no']
+            channel_id = self.channel_ids[order_data['channel']]
+            channel_water_id = order_data['id']
+            time = order_data['time_paid']
+            event['_id'] = event['id']
+            self.context_repos.pay_mongodb.insert(event)
+            self.context_repos.pay_repo.insert(water_id, channel_id, channel_water_id, amount, order_id, time)
+            self.context_repos.order_repo.update_state_1(order_id)
+            logging.info('支付webhook处理成功')
+            return {'code': 0, 'msg': '付款成功'}
+        elif type == 'refund.succeeded':
+            # TODO: 处理退款成功的逻辑
+            return {'code': 0, 'msg': '退款成功'}
         else:
-            logging.info('weebhooks验证错误 data:%s, sig: %s' % (str(data), sig))
+            logging.info('webhooks错误: %s' % str(event))
 
         return {'status_code': 500, 'code': -1, 'msg': '处理失败'}
 

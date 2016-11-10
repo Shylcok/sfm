@@ -16,23 +16,43 @@ import traceback
 from base_service import BaseService
 
 from payment.pay_processor import PayProcessor
-
+from settings import CONFIG
+from tornado.gen import coroutine
+from tornado.gen import Return
 
 class PayService(BaseService):
-
     def __init__(self, services):
         super(PayService, self).__init__(services)
 
-    def pay(self, pay_params):
-        try:
-            order_id = pay_params['order_id']
-            self.context_repos.order_repo.select_by_order_id
-            pay_params = PayProcessor().build_pay_params(pay_params)
-            res = PayProcessor().pay(pay_params)
-            return res
-        except Exception:
-            traceback.print_exc()
-            return {'code': 110, 'msg': '支付异常,参数错误'}
+    @coroutine
+    def pay(self, client_ip, user_id, pay_params):
+        order_id = pay_params['order_id']
+        channel = pay_params['channel']
+        success_url = pay_params['success_url']
+        order_info = yield self.context_repos.order_repo.select_by_order_id_user_id(order_id, user_id)
+        orders_info = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+
+        pay_info = {}
+        pay_info['order_no'] = order_id  # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
+        pay_info['app'] = dict(id=CONFIG['pay']['app_id'])  # 支付使用的  app 对象的  id
+        pay_info['channel'] = channel  # alipay_pc_direct	支付宝 PC 网页支付;wx_pub_qr 微信公众号扫码支付
+        pay_info['amount'] = order_info['pay_amount']  # 订单总金额（必须大于0
+        pay_info['currency'] = 'cny'  # 三位 ISO 货币代码，目前仅支持人民币  cny 。
+        pay_info['client_ip'] = client_ip
+        pay_info['subject'] = "商品"  # 商品的标题，该参数最长为 32 个 Unicode 字符
+        pay_info['body'] = orders_info[0]['sku_name']  # 商品的描述信息，该参数最长为 128 个 Unicode 字符
+        pay_info['time_expire'] = order_info['overtime']  # 订单失效时间
+
+        if pay_params['channel'] == 'alipay_pc_direct':
+            pay_info['extra'] = dict(
+                success_url=success_url  # 支付成功的回调地址。到达付款成功页面
+            )
+        elif pay_params['channel'] == 'wx_pub_qr':
+            pay_info['extra'] = dict(
+                product_id=pay_params['product_id']
+            )
+        res = PayProcessor().pay(pay_info)
+        raise Return(res)
 
     def refund(self, refund_params):
         try:

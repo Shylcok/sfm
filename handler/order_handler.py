@@ -79,7 +79,7 @@ class OrderHandler(BaseHandler):
 
     @coroutine
     @handler_decorator(perm=1, types={'user_id': str, 'order_type': str, 'cart_list': tuple, 'sku_list': tuple,
-                                       'counpon_code': str}, plain=False, async=True, finished=True)
+                                      'counpon_code': str}, plain=False, async=True, finished=True)
     def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
         """
         订单准备
@@ -96,8 +96,8 @@ class OrderHandler(BaseHandler):
 
     @coroutine
     @handler_decorator(perm=1, types={'user_id': str, 'address_id': str, 'order_type': str, 'cart_list': tuple,
-                                       'sku_list': tuple, 'user_note': str,
-                                       'counpon_code': str}, plain=False, async=True, finished=True)
+                                      'sku_list': tuple, 'user_note': str,
+                                      'counpon_code': str}, plain=False, async=True, finished=True)
     def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
         """
         提交订单,订单生成到数据库,到达支付页
@@ -152,7 +152,8 @@ class OrderHandler(BaseHandler):
         raise Return(res)
 
     @coroutine
-    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str, 'reason': str}, plain=False, async=True, finished=True)
+    @handler_decorator(perm=1, types={'user_id': str, 'order_id': str, 'reason': str}, plain=False, async=True,
+                       finished=True)
     def cancel_order(self, user_id, order_id, reason):
         """
         取消订单
@@ -168,7 +169,8 @@ class OrderHandler(BaseHandler):
         """获取交易流水号"""
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str, 'order_type': str, 'page': int, 'count': int}, plain=False, async=True, finished=True)
+    @handler_decorator(perm='', types={'user_id': str, 'order_type': str, 'page': int, 'count': int}, plain=False,
+                       async=True, finished=True)
     def get_order_list(self, user_id, order_type, page, count):
         """
         获取用户订单列表
@@ -191,8 +193,10 @@ class OrderHandler(BaseHandler):
         res = yield self.context_services.order_service.get_order(order_id)
         raise Return(res)
 
-    @handler_decorator(perm=0, types={'client_ip': str, 'pay_params': dict}, plain=False, async=False, finished=True)
-    def pay(self, client_ip, pay_params):
+    @coroutine
+    @handler_decorator(perm=1, types={'client_ip': str, 'user_id': str, 'pay_params': dict}, plain=False, async=True,
+                       finished=True)
+    def pay(self, client_ip, pay_params, user_id=3):
         """
         订单支付
         :param client_ip:
@@ -201,10 +205,10 @@ class OrderHandler(BaseHandler):
         """
         # pay_params.update({'client_ip': client_ip})
         # pay_params.update({'user_id': user_id})
-        res = self.context_services.pay_sevice.pay(pay_params)
-        return res
+        res = yield self.context_services.pay_sevice.pay(client_ip, user_id, pay_params)
+        raise Return(res)
 
-    @handler_decorator(perm='', types={'orderno': str}, plain=False, async=False, finished=True)
+    @handler_decorator(perm=0, types={'orderno': str}, plain=False, async=False, finished=True)
     def apply_refund(self, orderno):
         """
         申请退款

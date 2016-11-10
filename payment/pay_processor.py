@@ -29,29 +29,6 @@ class PayProcessor(object):
         pingpp.private_key_path = os.path.dirname(__file__) + 'your_rsa_private_key.pem'
 
     @staticmethod
-    def build_pay_params(pay_params):
-        pay_info = {}
-        pay_info['order_no'] = pay_params['order_id']   # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
-        pay_info['app'] = dict(id=CONFIG['pay']['app_id'])  # 支付使用的  app 对象的  id
-        pay_info['channel'] = pay_params['channel']  # alipay_pc_direct	支付宝 PC 网页支付;wx_pub_qr 微信公众号扫码支付
-        pay_info['amount'] = pay_params['amount']  # 订单总金额（必须大于0
-        pay_info['currency'] = 'cny'  # 三位 ISO 货币代码，目前仅支持人民币  cny 。
-        pay_info['client_ip'] = pay_params['client_ip']
-        pay_info['subject'] = pay_params['subject']  # 商品的标题，该参数最长为 32 个 Unicode 字符
-        pay_info['body'] = pay_params['body']  # 商品的描述信息，该参数最长为 128 个 Unicode 字符
-        pay_info['time_expire'] = str(int(time.time()) + 300) # 订单失效时间
-
-        if pay_params['channel'] == 'alipay_pc_direct':
-            pay_info['extra'] = dict(
-                success_url=pay_params['success_url']  # 支付成功的回调地址。到达付款成功页面
-            )
-        elif pay_params['channel'] == 'wx_pub_qr':
-            pay_info['extra'] = dict(
-                product_id=pay_params['product_id']
-            )
-        return pay_info
-
-    @staticmethod
     def pay(params):
         logging.info('支付参数: ' + str(params))
         response_charge = pingpp.Charge.create(api_key=pingpp.api_key, **params)

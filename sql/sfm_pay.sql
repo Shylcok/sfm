@@ -23,9 +23,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `sfm_pay`;
 CREATE TABLE `sfm_pay` (
   `id` int(10) unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
-  `water_id` varchar(32) COMMENT '流水号',
+  `water_id` varchar(32) COMMENT '流水号, 支付宝',
   `channel_id` int(10) COMMENT '付款方式 0 微信，1支付宝，3额度卡',
-  `channel_water_id` varchar(32) COMMENT '三方流水号',
+  `channel_water_id` varchar(32) COMMENT '三方流水号, pingpp',
   `account` varchar(60) COMMENT '付款账户',
   `amount` int(10) COMMENT '支付金额',
   `order_id` varchar(32) COMMENT '支付对应的订单号',
