@@ -15,7 +15,6 @@
 
 CONFIG = {
     'DEBUG': False,
-
     'HTTP': {
         'HOST': '0.0.0.0',
         'PORT': 8089,
@@ -38,16 +37,16 @@ CONFIG = {
         'PASSWD': 'qwrYlksfnDqrfsa*3weaew',
         'NAME': 'sfm',
     },
-
+    'MONGODB': {
+        'HOST': '127.0.0.1',
+        'PORT': 27017
+    },
     'LOG_PATH': './sfm-8089.log',
     'pay': {
             'app_id': 'app_9CO8q1TGCK00P44G',
             'api_key': 'sk_live_L0CqXLf1SyfL0GO4a9zv1yHS',
             },
-
     'token_secret_key': 'qksytijhjhhdhha%&*&O&&(*',
     'AESKEY': 'ovgNwKHpqmdOTYgI',
     'sku_url': 'http://139.224.44.238:8890/productApi.apiProduct/detail?skuid=',
-
-
 }

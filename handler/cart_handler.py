@@ -33,8 +33,8 @@ class CartHandler(BaseHandler):
         return res
 
     @gen.coroutine
-    @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=True, finished=True)
-    def cart_list(self, user_id):
+    @handler_decorator(perm=0, types={'user_id': str}, plain=False, async=True, finished=True)
+    def cart_list(self, user_id=3):
         """
         购物车列表
         :param user_id:
