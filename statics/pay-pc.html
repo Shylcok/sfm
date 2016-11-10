@@ -20,7 +20,12 @@
             <label class="text_amount">
                 <input id="amount" type="text" placeholder="金 额(分)"/>
             </label>
-
+            <div style="margin: 0 auto; width: 200px; height: 40px">
+                <input id="host_ip" type="text" placeholder="请求的url"/>
+            </div>
+            <div style="margin: 0 auto; width: 200px; height: 40px">
+                <input id="order_id" type="text" placeholder="订单号"/>
+            </div>
             <div class="ch">
                 <span class="up" onclick="wap_pay('upacp_pc')">银联网页支付</span>
                 <span class="up" onclick="wap_pay('alipay_pc_direct')">支付宝网页支付</span>
@@ -34,16 +39,18 @@
 <script>
     function wap_pay(channel) {
         var amount = document.getElementById('amount').value;
+        var url = document.getElementById('host_ip').value;
+        var order_id = document.getElementById('order_id').value;
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;//否则，即使服务器同意发送Cookie，浏览器也不会发送。或者，服务器要求设置Cookie，浏览器也不会处理。
-        xhr.open("POST", "http://0.0.0.0:8089/api/order/pay", true);
+        xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.send(JSON.stringify({
                     pay_params:
                         {
                             channel: channel,
 //                            amount: amount,
-                            order_id: '14786148883',
+                            order_id: order_id,
 //                            subject: '手机', //商品标题
 //                            body: '华为手机', //商品描述信息
                             success_url: 'www.sfm.com/order/pay_complete?order_id=400000002' // 支付宝支付成功的回调，可以到支付结果页或者该订单详情页
