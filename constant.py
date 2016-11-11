@@ -21,8 +21,9 @@ CONST_COOKIE_EXPIRES = 60 * 60 * 12  # 12小时
 CONST_COOKIE_USER_TOKEN_NAME = 'sfm_user_token'
 CONST_COOKIE_USER_NAME = 'user_name'
 
-CONST_ORDER_OVER_DURATION = 30 * 60  # 订单过期时间:30分钟, mysql
-CONST_ORDER_OVER_DURATION_CELERY = 6 * 1  # 订单过期时间 30 分钟, 任务队列30分钟后执行
+"""这里注意,一般mysql中的期限要小于消息队列中的期限, 避免支付过程中,解库存了"""
+CONST_ORDER_OVER_DURATION = 5 * 60  # 订单过期时间:30分钟, mysql
+CONST_ORDER_OVER_DURATION_CELERY = 6 * 60  # 订单过期时间 30 分钟, 任务队列30分钟后执行
 CONST_ORDER_OVER_DURATION_CELERY_RETRY = 3 # 3s后继续尝试
 CONST_ORDER_SHIP_AMOUNT = 1000  # 默认邮费 10 元
 

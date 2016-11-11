@@ -419,7 +419,7 @@
 		  "success_url": "www.sfm.com/order/pay_complete?order_id=400000002"
 		}
 	
-	> channel = "wx_pub_qr" or "alipay_pc_direct"
+	> channel = "wx_pub_qr" or "alipay_pc_direct"   
 	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 		
 

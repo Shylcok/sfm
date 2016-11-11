@@ -43,10 +43,11 @@ class OrderGenerator(BaseService):
             first_price = sku['first_price']
             sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
             if sku_info:
-                # TODO: 打开首付验证
-                # if sku['first_price'] >= sku_info['firstPay'][-1]:
-                    # logging.error('首付价格超过最高首付, first_price=%s, firstPay=%s' %(cart_info['first_price'], sku_info['firstPay']))
-                    # continue
+                """打开首付验证"""
+                if int(sku['first_price']) > int(sku_info['firstPay'][-1]):
+                    logging.error(
+                        '首付价格超过最高首付, first_price=%s, firstPay=%s' % (sku['first_price'], sku_info['firstPay']))
+                    raise gen.Return(False)
                 sku_info['order_sku_id'] = sku_id
                 sku_info['order_sku_count'] = sku_count
                 sku_info['order_first_price'] = first_price
@@ -59,6 +60,7 @@ class OrderGenerator(BaseService):
                 self.order_sku_infos.append(sku_info)
             else:
                 logging.error('不存在的商品, sku_id=%s' % sku_id)
+                raise gen.Return(False)
 
     @coroutine
     def add_cart_list(self, cart_list):
@@ -67,16 +69,18 @@ class OrderGenerator(BaseService):
             cart_info = yield self.context_repos.cart_repo.select_by_id(cart_id)
             if cart_info is None:
                 logging.error('传入不存在的购物车id:%s' % cart_id)
+                raise gen.Return(False)
             else:
                 sku_id = cart_info['sku_id']
                 sku_count = cart_info['sku_count']
                 first_price = int(cart['first_price'])
                 sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
                 if sku_info:
-                    # TODO: 打开首付验证
-                    # if cart_info['first_price'] >= sku_info['firstPay'][-1]:
-                        # logging.error('首付价格超过最高首付, first_price=%s, firstPay=%s' %(cart_info['first_price'], sku_info['firstPay']))
-                        # continue
+                    """打开首付验证"""
+                    if int(cart['first_price']) > int(sku_info['firstPay'][-1]):
+                        logging.error('首付价格超过最高首付, first_price=%s, firstPay=%s' % (
+                            cart['first_price'], sku_info['firstPay']))
+                        raise gen.Return(False)
                     sku_info['order_sku_id'] = sku_id
                     sku_info['order_sku_count'] = sku_count
                     sku_info['order_first_price'] = first_price
@@ -89,6 +93,7 @@ class OrderGenerator(BaseService):
                     self.order_sku_infos.append(sku_info)
                 else:
                     logging.error('不存在的商品, sku_id=%s' % sku_id)
+                    raise gen.Return(False)
 
     def get(self):
         self.order_info = {
@@ -103,7 +108,6 @@ class OrderGenerator(BaseService):
 
 
 class OrderService(BaseService):
-
     def __init__(self, services):
         super(OrderService, self).__init__(services)
 
@@ -219,9 +223,14 @@ class OrderService(BaseService):
         """生成虚拟订单"""
         order_info = OrderGenerator(user_id)
         if order_type == 'cart':
-            yield order_info.add_cart_list(cart_list)
+            success = yield order_info.add_cart_list(cart_list)
+            if success is False:
+                raise gen.Return({'code': 210, 'msg': '异常数据'})
+
         elif order_type == 'sku':
-            yield order_info.add_sku_list(sku_list)
+            success = yield order_info.add_sku_list(sku_list)
+            if success is False:
+                raise gen.Return({'code': 210, 'msg': '异常数据'})
 
         """提交订单之前锁库存"""
         success_descrase_stock = yield self.decrease_stocks(order_info)
@@ -238,7 +247,8 @@ class OrderService(BaseService):
         self.context_repos.order_mongodb.insert_one(order_info_dict)
         last_rowid = self.context_repos.order_repo.insert(order_info.order_id, order_info.ship_amount,
                                                           order_info.order_sku_amount, order_info.credit_amount,
-                                                          order_info.pay_amount, order_info.order_sku_count, user_id, address_id, user_note)
+                                                          order_info.pay_amount, order_info.order_sku_count, user_id,
+                                                          address_id, user_note)
         if last_rowid < 0:
             """订单插入失败,解库存"""
             yield self.increase_stocks(order_info.order_id)
@@ -260,10 +270,16 @@ class OrderService(BaseService):
             sku_image_url = order_sku_info['imglist'][0] if (len(order_sku_info['imglist']) > 0) else ''
             first_price = order_sku_info['order_first_price']
 
-            self.context_repos.sku_order_repo.insert(order_info.order_id, sku_id, sku_count, sku_weight, sku_amount, sku_name,
+            self.context_repos.sku_order_repo.insert(order_info.order_id, sku_id, sku_count, sku_weight, sku_amount,
+                                                     sku_name,
                                                      sku_image_url, first_price)
 
         logging.info('订单提交成功,单号:%s' % order_info.order_id)
+
+        """如果来自购物车,设置购物车中的status=0"""
+
+
+
         raise gen.Return({'code': 0, 'msg': '订单提交成功', 'data': order_info.order_id})
 
     @coroutine
@@ -309,7 +325,7 @@ class OrderService(BaseService):
                    }
             skus = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
             for sku in skus:
-                res['sku_infos'].append({'sku_name':sku['sku_name'],'sku_id': sku['sku_id']})
+                res['sku_infos'].append({'sku_name': sku['sku_name'], 'sku_id': sku['sku_id']})
 
             res['pay_amount'] = order_info['pay_amount']
             raise gen.Return(res)
@@ -345,8 +361,6 @@ class OrderService(BaseService):
 
         raise gen.Return({'code': 0, 'msg': '获取成功'}.append(res))
 
-
-
     """--------------后端服务——————————————————————————"""
 
     @coroutine
@@ -362,4 +376,3 @@ if __name__ == "__main__":
     order = OrderGenerator('111')
     order.order_sku_infos = [{'sku_id': 100, "sku_count": 1}]
     print str(order)
-

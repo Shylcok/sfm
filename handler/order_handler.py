@@ -196,15 +196,14 @@ class OrderHandler(BaseHandler):
     @coroutine
     @handler_decorator(perm=1, types={'client_ip': str, 'user_id': str, 'pay_params': dict}, plain=False, async=True,
                        finished=True)
-    def pay(self, client_ip, pay_params, user_id=3):
+    def pay(self, client_ip, pay_params, user_id):
         """
         订单支付
+        :param user_id:
         :param client_ip:
         :param pay_params:
         :return:
         """
-        # pay_params.update({'client_ip': client_ip})
-        # pay_params.update({'user_id': user_id})
         res = yield self.context_services.pay_sevice.pay(client_ip, user_id, pay_params)
         raise Return(res)
 

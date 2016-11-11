@@ -32,7 +32,6 @@ logger = get_task_logger(__name__)
 def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失效的任务
     try:
         logger.info('===================> exec_task_order_overtime order_id=%s' % order_id)
-        a = 1/0
         success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
         if success is False:
             logger.error(

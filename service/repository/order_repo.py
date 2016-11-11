@@ -74,7 +74,7 @@ class OrderRepo(BaseRepo):
         :return:
         """
         sql = """
-            update {} set state=1 where order_id=%s and state=0
+            update {} set state=1 where order_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, order_id)
         return res
@@ -115,6 +115,20 @@ class OrderRepo(BaseRepo):
         """
         sql = """
             update {} set state=4, reason=%s WHERE order_id=%s and state=0
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_lastrowid(sql, reason, order_id)
+        return res
+
+    @run_on_executor
+    def update_state_5(self, order_id, reason):
+        """
+        订单过期
+        :param order_id:
+        :param reason:
+        :return:
+        """
+        sql = """
+            update {} set state=5, reason=%s WHERE order_id=%s and state=0
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, reason, order_id)
         return res

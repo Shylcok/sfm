@@ -12,7 +12,6 @@
 @time: 16/10/12 下午2:15
 """
 
-
 CONFIG = {
     'DEBUG': False,
     'HTTP': {
@@ -21,25 +20,28 @@ CONFIG = {
     },
 
     'DATABASE': {
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
+        'HOST': '139.224.44.238',  # '127.0.0.1'
+        'PORT': 3307,
+        # 'USER': 'root',
+        # 'PASSWD': '123456',
+        # 'NAME': 'sfm',
         'USER': 'root',
-        'PASSWD': '123456',
+        'PASSWD': 'qwrYlksfnDqrfsa*3weaew',
         'NAME': 'sfm',
     },
     'SMS_REDIS': {  # 短信验证码
-        'HOST': '127.0.0.1',
-        'PORT': 6379,
+        'HOST': '139.224.44.238', #'127.0.0.1',
+        'PORT': 6380,
         'DB': 4
     },
     'CELERY_REDIS': {  # 订单定时任务消息
-        'HOST': '127.0.0.1',
-        'PORT': 6379,
+        'HOST': '139.224.44.238',
+        'PORT': 6380,
         'DB': 5
     },
     'MONGODB': {
-        'HOST': '127.0.0.1',
-        'PORT': 27017
+        'HOST': '139.224.44.238',
+        'PORT': 27018
     },
     'LOG_PATH': './sfm-8089.log',
     'pay': {
