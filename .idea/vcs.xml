@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../example/pingpp-python" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../55haitao_sns" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../black" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../contractor" vcs="Git" />

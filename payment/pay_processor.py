@@ -56,19 +56,23 @@ class PayProcessor(object):
         return base64.decodestring(data.encode('utf-8'))
 
     @staticmethod
-    def verify(data, sig):
+    def verify1(data, sig):
         signs = PayProcessor().decode_base64(sig)
         data = data.decode('utf-8') if hasattr(data, "decode") else data
         pubkeystr = open(os.path.join(os.path.dirname(__file__),
-                         'your_rsa_public_key.pem')).read()
+                         'pingpp_public_key.pem')).read()
         pubkey = RSA.importKey(pubkeystr)
         digest = SHA256.new(data.encode('utf-8'))
         pkcs = PKCS1_v1_5.new(pubkey)
         return pkcs.verify(digest, signs)
 
-
-
-
-
-
-
+    @staticmethod
+    def verify(data, sig):
+        signs = PayProcessor().decode_base64(sig)
+        data = data.decode('utf-8') if hasattr(data, "decode") else data
+        pubkeystr = open(os.path.join(os.path.dirname(__file__),
+                                      'pingpp_public_key.pem')).read()
+        pubkey = RSA.importKey(pubkeystr)
+        digest = SHA256.new(data.encode('utf-8'))
+        pkcs = PKCS1_v1_5.new(pubkey)
+        return pkcs.verify(digest, signs)
