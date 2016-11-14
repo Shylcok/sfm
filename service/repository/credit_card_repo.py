@@ -41,7 +41,7 @@ class CreditCardRepo(BaseRepo):
 
     def update(self, cost_amount, card_id):
         sql = """
-            update {} set remain_amount=remain_amount-%s where card_id=%s
+            update {} set remain_amount=remain_amount+%s where card_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, cost_amount, card_id)
         return res

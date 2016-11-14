@@ -42,7 +42,7 @@ class CreditCardService(BaseService):
     def update_related_credit_card(self, order_id):
         order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         card_id = order_info['credit_card_id']
-        cost_amount = order_info['card_amount']
+        cost_amount = order_info['credit_amount']
         res = self.context_repos.credit_card_repo.update(cost_amount, card_id)
         raise Return(res)
 
