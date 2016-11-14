@@ -16,6 +16,7 @@
 from service.base_service import BaseService
 from payment.pay_processor import PayProcessor
 import logging
+from tornado.gen import Return, coroutine
 
 class WebhooksService(BaseService):
 
@@ -30,6 +31,7 @@ class WebhooksService(BaseService):
     def verify(self, data, sig):
         return PayProcessor().verify(data, sig)
 
+    @coroutine
     def pingpp(self, request_body):
         event = request_body
         event_type = event['type']
@@ -54,7 +56,7 @@ class WebhooksService(BaseService):
             self.context_repos.order_repo.update_state_1(order_id)
             logging.info('webhook====> 订单状态更新, order_id= %s' % order_id)
 
-            self.services.credit_card_service.update_related_credit_card(order_id)
+            yield self.services.credit_card_service.update_related_credit_card(order_id)
             logging.info('webhook====> 首付卡remain_amount更新')
 
             """订单过期消息删除"""
@@ -62,14 +64,14 @@ class WebhooksService(BaseService):
             logging.info('webhook====> 过期消息队列删除, order_id= %s' % order_id)
 
             logging.info('webhook=============> 支付回调处理成功')
-            return {'code': 0, 'msg': '付款成功'}
+            raise Return({'code': 0, 'msg': '付款成功'})
 
         elif type == 'refund.succeeded':
             # TODO: 处理退款成功的逻辑
-            return {'code': 0, 'msg': '退款成功'}
+            raise Return({'code': 0, 'msg': '退款成功'})
         else:
             logging.info('webhooks错误: %s' % str(event))
 
-        return {'status_code': 500, 'code': -1, 'msg': '处理失败'}
+        raise Return({'status_code': 500, 'code': -1, 'msg': '处理失败'})
 
 

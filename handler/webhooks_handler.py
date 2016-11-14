@@ -15,6 +15,7 @@
 from base_handler import *
 import base64
 import json
+from tornado.gen import coroutine, Return
 
 
 class WebhookHandler(BaseHandler):
@@ -32,17 +33,18 @@ class WebhookHandler(BaseHandler):
             logging.info('weebhooks验证错误 data:%s, sig: %s' % (str(data), sig))
         return is_verify
 
+    @coroutine
     @handler_decorator(perm=0, types={},
-                       plain=False, async=False, finished=True)
+                       plain=False, async=True, finished=True)
     def pingpp(self):
         """
         支付成功 hook
         :return:
         """
         if self.verify() is False:
-            return {'status_code': 500}
+            raise Return({'status_code': 500})
         else:
             request_body = json.loads(self.request.body)
-            res = self.context_services.webhooks_service.pingpp(request_body)
-            return res
+            res = yield self.context_services.webhooks_service.pingpp(request_body)
+            raise Return(res)
 
