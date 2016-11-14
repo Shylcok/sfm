@@ -46,20 +46,24 @@ class WebhooksService(BaseService):
             channel_water_id = order_data['id']
             time = order_data['time_paid']
             event['_id'] = event['id']
-            # 支付信息保存
+            """支付信息保存"""
             self.context_repos.pay_mongodb.insert(event)
             self.context_repos.pay_repo.insert(water_id, channel_id, channel_water_id, amount, order_id, time)
             logging.info('webhook====> 支付信息保存, water_id= %s' % water_id)
-            # 订单状态更新
-            # TODO: 这里有问题, 更新订单状态 完成支付的时候,订单状态应该在支付中, 防止订单在支付的时候被解库存; 或者支付时间期限要短于过期时间
+            """订单状态更新;这里有问题, 更新订单状态 完成支付的时候,订单状态应该在支付中, 防止订单在支付的时候被解库存; 或者支付时间期限要短于过期时间"""
             self.context_repos.order_repo.update_state_1(order_id)
             logging.info('webhook====> 订单状态更新, order_id= %s' % order_id)
-            # 订单过期消息删除
+
+            self.services.credit_card_service.update_related_credit_card(order_id)
+            logging.info('webhook====> 首付卡remain_amount更新')
+
+            """订单过期消息删除"""
             self.services.order_overtime_task_service.after_pay_celery(order_id)
             logging.info('webhook====> 过期消息队列删除, order_id= %s' % order_id)
 
-            logging.info('webhook====>处理成功')
+            logging.info('webhook=============> 支付回调处理成功')
             return {'code': 0, 'msg': '付款成功'}
+
         elif type == 'refund.succeeded':
             # TODO: 处理退款成功的逻辑
             return {'code': 0, 'msg': '退款成功'}

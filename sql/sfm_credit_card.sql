@@ -23,10 +23,12 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `sfm_credit_card`;
 CREATE TABLE `sfm_credit_card` (
   `id` int(10) unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '自增id',
+  `user_id` int(10) COMMENT '用户id',
   `card_id` varchar(32) COMMENT '额度卡编号',
   `amount` int(10) COMMENT '总额度',
   `remain_amount` int(10) COMMENT '剩余额度',
-  INDEX `card_id` (`card_id`) COMMENT '额度卡编号索引'
+  UNIQUE KEY `card_id` (`card_id`) COMMENT '额度卡编号索引',
+  UNIQUE KEY `user_id` (`user_id`) COMMENT '订单索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='信用额度卡表';
 
 SET FOREIGN_KEY_CHECKS = 1;

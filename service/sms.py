@@ -23,10 +23,10 @@ balance_get_uri = "/msg/QueryBalance"
 sms_send_uri = "/msg/HttpBatchSendSM"
 
 #�����˺�
-account = "jk_cs_J6"
+account = "jkcs-zdA1"
 
 #��������
-password = "FRf789258"
+password = "DtwpQi23864"
 
 def get_user_balance():
     """

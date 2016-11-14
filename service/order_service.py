@@ -51,12 +51,12 @@ class OrderGenerator(BaseService):
                 sku_info['order_sku_id'] = sku_id
                 sku_info['order_sku_count'] = sku_count
                 sku_info['order_first_price'] = first_price
-                sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
+                # sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
 
                 self.order_sku_count += sku_count
                 self.order_sku_amount += sku_count * int(sku_info['realPrice'])
-                self.credit_amount += sku_count * (-sku_info['order_credit_price'])
-                self.pay_amount = self.order_sku_amount + self.credit_amount
+                self.credit_amount += sku_count * (-sku_info['order_first_price'])
+                self.pay_amount = self.order_sku_amount + self.credit_amount + self.ship_amount
                 self.order_sku_infos.append(sku_info)
             else:
                 logging.error('不存在的商品, sku_id=%s' % sku_id)
@@ -84,12 +84,12 @@ class OrderGenerator(BaseService):
                     sku_info['order_sku_id'] = sku_id
                     sku_info['order_sku_count'] = sku_count
                     sku_info['order_first_price'] = first_price
-                    sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
+                    # sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
 
                     self.order_sku_count += sku_count
                     self.order_sku_amount += sku_count * int(sku_info['realPrice'])
-                    self.credit_amount += sku_count * (-sku_info['order_credit_price'])
-                    self.pay_amount = self.order_sku_amount + self.credit_amount
+                    self.credit_amount += sku_count * (-sku_info['order_first_price'])
+                    self.pay_amount = self.order_sku_amount + self.credit_amount + self.ship_amount
                     self.order_sku_infos.append(sku_info)
                 else:
                     logging.error('不存在的商品, sku_id=%s' % sku_id)
@@ -245,10 +245,17 @@ class OrderService(BaseService):
         order_info_dict['_id'] = order_info.order_id
         # 此处选择mongodb 做备份存储,其实完全没有必要, 我们可以认为订单锁库存后一定会入库成功, 子订单也一定会入库成功, 解锁库存应该从mysql的子订单中查找
         self.context_repos.order_mongodb.insert_one(order_info_dict)
+        # card_id = self.context_repos.credit_card_repo.select(user_id)
+        card_info = self.context_repos.credit_card_repo.select(user_id)
+        remain_amount = card_info['remain_amount']
+        if remain_amount < order_info.credit_amount:
+            logging.warn('额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount))
+            raise gen.Return({'code': 310, 'msg': '额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount)})
+
         last_rowid = self.context_repos.order_repo.insert(order_info.order_id, order_info.ship_amount,
                                                           order_info.order_sku_amount, order_info.credit_amount,
                                                           order_info.pay_amount, order_info.order_sku_count, user_id,
-                                                          address_id, user_note)
+                                                          address_id, user_note, card_info['card_id'])
         if last_rowid < 0:
             """订单插入失败,解库存"""
             yield self.increase_stocks(order_info.order_id)
@@ -277,8 +284,10 @@ class OrderService(BaseService):
         logging.info('订单提交成功,单号:%s' % order_info.order_id)
 
         """如果来自购物车,设置购物车中的status=0"""
-
-
+        if order_type == "cart":
+            for card_info in cart_list:
+                logging.info('提交订单,删除购物车内数据, cart_id=%s' % str(card_info))
+                self.context_repos.cart_repo.delete(card_info['cart_id'])
 
         raise gen.Return({'code': 0, 'msg': '订单提交成功', 'data': order_info.order_id})
 

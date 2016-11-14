@@ -19,7 +19,7 @@ import logging
 from core.http_exception import *
 from service.user_service import UserService
 import constant
-
+import traceback
 
 class CoreHandler(tornado.web.RequestHandler):
     def __init__(self, application, request, **kwargs):
@@ -148,15 +148,20 @@ class CoreHandler(tornado.web.RequestHandler):
             params[name] = value
 
         """执行"""
-        if rest_spec['async']:
-            result = yield func(**params)
-        else:
-            result = func(**params)
-
-        if rest_spec['finished'] is True:
-            if rest_spec['plain'] is False:
-                self.finish(Http200(result))  # 返回规格结果
-                return
+        try:
+            if rest_spec['async']:
+                result = yield func(**params)
             else:
-                super(CoreHandler, self).finish(result)  # 返回原始结果
-                return
+                result = func(**params)
+
+            if rest_spec['finished'] is True:
+                if rest_spec['plain'] is False:
+                    self.finish(Http200(result))  # 返回规格结果
+                    return
+                else:
+                    super(CoreHandler, self).finish(result)  # 返回原始结果
+                    return
+        except Exception, e:
+            traceback.print_exc()
+            self.finish(Http500(str(e)))
+            return

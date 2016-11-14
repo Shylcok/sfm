@@ -66,6 +66,13 @@ class CartRepo(BaseRepo):
         res = self.db.execute_rowcount(sql, user_id, sku_id)
         return res
 
+    def delete(self, cart_id):
+        sql = """
+            delete from {} WHERE id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_rowcount(sql, cart_id)
+        return res
+
     def count(self, user_id):
         sql = """
             select sum(sku_count) as sum from {} WHERE user_id=%s

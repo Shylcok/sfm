@@ -35,6 +35,7 @@ class Application(tornado.web.Application):
             (r'/api/user/.*', UserHandler),
             (r'/api/cart/.*', CartHandler),
             (r'/api/webhooks/.*', WebhookHandler),
+            (r'/api/credit_card/.*', CreditCardHandler),
             (r'/api/static/(.*)', tornado.web.StaticFileHandler, {"path": "statics/"}),
         ]
         settings = {

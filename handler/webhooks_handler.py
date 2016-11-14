@@ -23,7 +23,7 @@ class WebhookHandler(BaseHandler):
     """
 
     def verify(self):
-        data = json.loads(self.request.body)
+        data = self.request.body
         sig = self.request.headers.get('x-pingplusplus-signature')
         if sig is None:
             return True

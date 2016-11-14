@@ -15,4 +15,5 @@
 from order_handler import OrderHandler
 from user_handler import UserHandler
 from cart_handler import CartHandler
+from credit_card_handler import CreditCardHandler
 from webhooks_handler import WebhookHandler

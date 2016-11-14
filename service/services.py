@@ -18,6 +18,7 @@ from order_service import OrderService
 from pay_service import PayService
 from order_overtime_task_service import OrderOvertimeTaskService
 from webhooks_service import WebhooksService
+from credit_card_service import CreditCardService
 import logging
 
 
@@ -30,6 +31,7 @@ class Services(object):
         self._pay_service = PayService(self)
         self._order_overtime_task_service = OrderOvertimeTaskService(self)
         self._webhooks_service = WebhooksService(self)
+        self._credit_card_service = CreditCardService(self)
 
     @property
     def user_service(self):
@@ -54,3 +56,7 @@ class Services(object):
     @property
     def order_overtime_task_service(self):
         return self._order_overtime_task_service
+
+    @property
+    def credit_card_service(self):
+        return self._credit_card_service

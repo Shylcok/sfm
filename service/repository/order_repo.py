@@ -22,15 +22,15 @@ class OrderRepo(BaseRepo):
     TABLE_NAME = 'sfm_order'
 
     def insert(self, order_id, ship_amount, sku_amount, credit_amount, pay_amount, sku_count, user_id, address_id,
-               user_note):
+               user_note, card_id):
         sql = """
             insert into {} set order_id=%s, state=0, ctime=%s, utime=%s, overtime=%s,
-            ship_amount=%s, sku_amount=%s, credit_amount=%s, pay_amount=%s, user_id=%s, address_id=%s, status=1, user_note=%s
+            ship_amount=%s, sku_amount=%s, credit_amount=%s, pay_amount=%s, user_id=%s, address_id=%s, status=1, user_note=%s, credit_card_id=%s
         """.format(self.TABLE_NAME)
         lastrowid = self.db.execute_lastrowid(sql, order_id, time.time(), time.time(),
                                               time.time() + CONST_ORDER_OVER_DURATION,
                                               ship_amount, sku_amount, credit_amount, pay_amount, user_id, address_id,
-                                              user_note)
+                                              user_note, card_id)
         return lastrowid
 
     @run_on_executor
@@ -147,6 +147,14 @@ class OrderRepo(BaseRepo):
             select * from {} where order_id=%s AND user_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.get(sql, order_id, user_id)
+        return res
+
+    @run_on_executor
+    def select_by_credit_card_id(self, credit_id):
+        sql = """
+            select * from {} where credit_card_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, credit_id)
         return res
 
     def test(self):

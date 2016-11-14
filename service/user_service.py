@@ -73,12 +73,16 @@ class UserService(BaseService):
             return {'code': 117, 'msg': '验证码错误'}
 
         user = self.context_repos.user_repo.select_by_mobile(mobile)
-        if len(user) > 0:
+        if user is not None:
             return {'code': 110, 'msg': '该号码已经注册,请联系客服'}
 
         pwd_md5 = hashlib.md5(pwd).hexdigest()
         last_row_id = self.context_repos.user_repo.insert(mobile, pwd_md5)
         if last_row_id > 0:
+            user = self.context_repos.user_repo.select_by_mobile(mobile)
+            user_id = user['id']
+            self.services.credit_card_service.create_credit_card(user_id)
+
             return {'code': 0, 'msg': '注册成功'}
         else:
             return {'code': 111, 'msg': '注册失败,请重试'}

@@ -32,7 +32,7 @@ class UserRepo(BaseRepo):
         sql = """
             select * from {} where mobile=%s
         """.format(self.TABLE_NAME)
-        return self.db.query(sql, mobile)
+        return self.db.get(sql, mobile)
 
     def select_by_user_name(self, user_name):
         sql = """

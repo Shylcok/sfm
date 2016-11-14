@@ -80,6 +80,10 @@ def Http404(data):
     return Http(404, 404, u'(未找到)服务器找不到请求的网页。', data)
 
 
+def Http500(data):
+    return Http(500, 500, u'服务异常。', data)
+
+
 E_CORE_MISSING_ARGUMENT = 100
 E_CORE_INVALID_ARGUMENT = 101
 E_CORE_INTERNAL_EXCEPTION = 102

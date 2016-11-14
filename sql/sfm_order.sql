@@ -54,3 +54,6 @@ CREATE TABLE `sfm_order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+alter table sfm_order add credit_card_id varchar(32) null COMMENT '首付卡id';
