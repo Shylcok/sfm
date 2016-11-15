@@ -69,7 +69,7 @@ class CartHandler(BaseHandler):
     def del_cart(self, user_id, sku_ids):
         """
         删除购物车记录
-        :param sku_id:
+        :param sku_ids:
         :param user_id:
         :return:
         """

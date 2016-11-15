@@ -20,11 +20,13 @@ CONFIG = {
     },
 
     'DATABASE': {
-        'HOST': '139.224.44.238',  # '127.0.0.1'
-        'PORT': 3307,
+        # 'HOST': '127.0.0.1',
+        # 'PORT': 3306,
         # 'USER': 'root',
         # 'PASSWD': '123456',
         # 'NAME': 'sfm',
+        'HOST': '139.224.44.238',
+        'PORT': 3307,
         'USER': 'root',
         'PASSWD': 'qwrYlksfnDqrfsa*3weaew',
         'NAME': 'sfm',
