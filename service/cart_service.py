@@ -69,9 +69,10 @@ class CartService(BaseService):
             res = self.context_repos.cart_repo.update(user_id, sku_id, sku_count)
             return res
 
-    def del_cart(self, user_id, sku_id):
-        res = self.context_repos.cart_repo.delete(user_id, sku_id)
-        return res
+    def del_cart(self, user_id, sku_ids):
+        for sku_id in sku_ids:
+            res = self.context_repos.cart_repo.delete(user_id, sku_id)
+        return {'code': 0, 'msg': '删除成功'}
 
     def cart_count(self, user_id):
         res = self.context_repos.cart_repo.count(user_id)

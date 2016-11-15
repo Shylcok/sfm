@@ -65,13 +65,13 @@ class CartHandler(BaseHandler):
         res = self.context_services.cart_service.update_cart(user_id, sku_id, sku_count)
         return res
 
-    @handler_decorator(perm=1, types={'user_id': int, 'sku_id': int}, plain=False, async=False, finished=True)
-    def del_cart(self, user_id, sku_id):
+    @handler_decorator(perm=1, types={'user_id': int, 'sku_ids': list}, plain=False, async=False, finished=True)
+    def del_cart(self, user_id, sku_ids):
         """
         删除购物车记录
         :param sku_id:
         :param user_id:
         :return:
         """
-        res = self.context_services.cart_service.del_cart(user_id, sku_id)
+        res = self.context_services.cart_service.del_cart(user_id, sku_ids)
         return res
