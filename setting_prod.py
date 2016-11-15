@@ -31,7 +31,7 @@ CONFIG = {
         'DB': 5
     },
     'DATABASE': {
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': 3306,
         'USER': 'root',
         'PASSWD': 'qwrYlksfnDqrfsa*3weaew',

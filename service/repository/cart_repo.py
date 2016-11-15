@@ -66,7 +66,7 @@ class CartRepo(BaseRepo):
         res = self.db.execute_rowcount(sql, user_id, sku_id)
         return res
 
-    def delete(self, cart_id):
+    def delete_by_cart_id(self, cart_id):
         sql = """
             delete from {} WHERE id=%s
         """.format(self.TABLE_NAME)

@@ -287,7 +287,7 @@ class OrderService(BaseService):
         if order_type == "cart":
             for card_info in cart_list:
                 logging.info('提交订单,删除购物车内数据, cart_id=%s' % str(card_info))
-                self.context_repos.cart_repo.delete(card_info['cart_id'])
+                self.context_repos.cart_repo.delete_by_cart_id(card_info['cart_id'])
 
         raise gen.Return({'code': 0, 'msg': '订单提交成功', 'data': order_info.order_id})
 
