@@ -284,7 +284,7 @@
 		            "first_price": 30000
 		        }
 		    ],
-		    "counpon_code": ""
+		    "coupon_code": ""
 		}
 	
 	> 所有的价格都以分为单位
@@ -343,9 +343,11 @@
 		}
 	>order_type:
 	
-		all			全部订单	
-		need_send	 代发货		
+		all				全部订单
+		need_pay   	代付款
+		need_send	 	代发货		
 		need_receive 待收货
+		complete		已完成
 
 ####4.支付页面订单简讯
 	/api/order/get_order_brief_for_pay
@@ -422,6 +424,16 @@
 	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 		
 
+###额度卡接口列表
+
+####1.额度卡信息
+	/api/credit_card/detail
+-	【权限】U
+-	【说明】
+
+	> 额度卡展示了订单的额度卡状态，必须订单状态state=1表示已付款
+- 	【参数】
+
 
 
 ###支付回调接口列表
@@ -442,6 +454,8 @@
 
 	> 必须订单状态state=0，表示下单未支付状态
 - 	【参数】
+
+
 		
 
 	

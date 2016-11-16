@@ -29,3 +29,11 @@ class CreditCardHandler(BaseHandler):
         """
         res = yield self.context_services.credit_card_service.detail(user_id)
         raise gen.Return(res)
+
+    @gen.coroutine
+    @handler_decorator(perm=1, types={'client_ip': str, 'user_id': str, 'pay_params': dict}, plain=False, async=True, finished=True)
+    def pay(self, client_ip, user_id, pay_params):
+        res = yield self.context_services.credit_card_service.pay_credit_card(client_ip, user_id, pay_params)
+        raise gen.Return(res)
+
+

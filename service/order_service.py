@@ -147,7 +147,7 @@ class OrderService(BaseService):
         return {'code': 0, 'msg': '设置默认地址成功', 'data': res}
 
     @coroutine
-    def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
+    def prepare_order(self, user_id, order_type, cart_list, sku_list, coupon_code):
         # 计算出首付价格, 额度卡透资价格, 运费, 需要支付的价格
         order_info = OrderGenerator(user_id)
 
@@ -305,8 +305,10 @@ class OrderService(BaseService):
             res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 0, page, count)
         elif order_type == 'need_send':
             res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 1, page, count)
-        elif order_type == 'nedd_receive':
+        elif order_type == 'need_receive':
             res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 2, page, count)
+        elif order_type == 'complete':
+            res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 5, page, count)
         else:
             raise gen.Return({'code': 201, 'msg': 'type参数错误'})
 

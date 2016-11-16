@@ -79,25 +79,25 @@ class OrderHandler(BaseHandler):
 
     @coroutine
     @handler_decorator(perm=1, types={'user_id': str, 'order_type': str, 'cart_list': tuple, 'sku_list': tuple,
-                                      'counpon_code': str}, plain=False, async=True, finished=True)
-    def prepare_order(self, user_id, order_type, cart_list, sku_list, counpon_code):
+                                      'coupon_code': str}, plain=False, async=True, finished=True)
+    def prepare_order(self, user_id, order_type, cart_list, sku_list, coupon_code):
         """
         订单准备
         :param user_id:
         :param order_type: cart, sku
         :param cart_list:
         :param sku_list:
-        :param counpon_code:
+        :param coupon_code:
         :return:
         """
         res = yield self.context_services.order_service.prepare_order(user_id, order_type, cart_list, sku_list,
-                                                                      counpon_code)
+                                                                      coupon_code)
         raise Return(res)
 
     @coroutine
     @handler_decorator(perm=1, types={'user_id': str, 'address_id': str, 'order_type': str, 'cart_list': tuple,
                                       'sku_list': tuple, 'user_note': str,
-                                      'counpon_code': str}, plain=False, async=True, finished=True)
+                                      'coupon_code': str}, plain=False, async=True, finished=True)
     def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
         """
         提交订单,订单生成到数据库,到达支付页

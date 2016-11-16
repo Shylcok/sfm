@@ -33,8 +33,16 @@ class CreditCardService(BaseService):
     @coroutine
     def detail(self, user_id):
         credit_card = self.context_repos.credit_card_repo.select(user_id)
+        if credit_card is None:
+            self.services.credit_card_service.create_credit_card(user_id)
+        credit_card = self.context_repos.credit_card_repo.select(user_id)
         credit_card_id = credit_card['card_id']
         orders = yield self.context_repos.order_repo.select_by_credit_card_id(credit_card_id)
+        for order in orders:
+            order_id = order['order_id']
+            skus = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+            order['skus'] = skus
+
         credit_card.update({'orders': orders})
         raise Return(credit_card)
 
@@ -45,5 +53,7 @@ class CreditCardService(BaseService):
         cost_amount = order_info['credit_amount']
         res = self.context_repos.credit_card_repo.update(cost_amount, card_id)
         raise Return(res)
+
+
 
 

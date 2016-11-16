@@ -152,7 +152,7 @@ class OrderRepo(BaseRepo):
     @run_on_executor
     def select_by_credit_card_id(self, credit_id):
         sql = """
-            select * from {} where credit_card_id=%s
+            select * from {} where credit_card_id=%s and state=1
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, credit_id)
         return res

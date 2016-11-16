@@ -25,7 +25,7 @@ CONST_COOKIE_USER_NAME = 'user_name'
 CONST_ORDER_OVER_DURATION = 5 * 60  # 订单过期时间:30分钟, mysql
 CONST_ORDER_OVER_DURATION_CELERY = 6 * 60  # 订单过期时间 30 分钟, 任务队列30分钟后执行
 CONST_ORDER_OVER_DURATION_CELERY_RETRY = 3  # 3s后继续尝试
-CONST_ORDER_SHIP_AMOUNT = -460  # 默认邮费 10 元
+CONST_ORDER_SHIP_AMOUNT = 1000  # 默认邮费 10 元
 
 
 # 订单号
@@ -38,5 +38,5 @@ def GENERATOR_CREDIT_CARD_ID(user_id):
     ID = '216' + str(int(time.time())) + str(user_id)
     return ID[0: 15]
 
-
 CREDIT_CARD_AMOUNT = 66600  # 666 元
+CREDIT_CARD_DELAY = 60 * 60 * 24 * 60  # 60天
