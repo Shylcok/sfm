@@ -49,6 +49,10 @@ class WebhooksService(BaseService):
             time = order_data['time_paid']
             event['_id'] = event['id']
             """支付信息保存"""
+            has_mongodb_pay = self.context_repos.pay_mongodb.find({'_id': event['id']})
+            # TODO: 控制并发引起多次调用webhook
+            if has_mongodb_pay is not None:
+                raise Return({'code': 0, 'msg': '消息已经接过过'})
             self.context_repos.pay_mongodb.insert(event)
             self.context_repos.pay_repo.insert(water_id, channel_id, channel_water_id, amount, order_id, time)
             logging.info('webhook====> 支付信息保存, water_id= %s' % water_id)

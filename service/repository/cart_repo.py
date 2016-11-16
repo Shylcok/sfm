@@ -25,7 +25,7 @@ class CartRepo(BaseRepo):
 
     def select_by_user_id(self, user_id):
         sql = """
-            select * from {} WHERE user_id=%s
+            select * from {} WHERE user_id=%s ORDER BY time desc
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id)
         return res

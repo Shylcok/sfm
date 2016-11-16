@@ -36,7 +36,7 @@ class OrderRepo(BaseRepo):
     @run_on_executor
     def select_by_user_id_state(self, user_id, state, page, count):
         sql = """
-            select * from {} where user_id=%s and status=1 and state=%s limit %s,%s
+            select * from {} where user_id=%s and status=1 and state=%s order by ctime desc limit %s,%s
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id, state, (page-1)*count, count)
 
@@ -49,7 +49,7 @@ class OrderRepo(BaseRepo):
     @run_on_executor
     def select_by_user_id_all(self, user_id, page, count):
         sql = """
-            select * from {} where user_id=%s and status=1 limit %s,%s
+            select * from {} where user_id=%s and status=1 order by ctime desc limit %s,%s
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id, (page-1)*count, count)
 

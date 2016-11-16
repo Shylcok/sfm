@@ -415,9 +415,12 @@
 - 	【参数】	
 
 		{
-		  "order_id": "14784316383",
-		  "channel": "alipay_pc_direct",
-		  "success_url": "www.sfm.com/order/pay_complete?order_id=400000002"
+		"pay_params":
+			{
+			  "order_id": "14784316383",
+			  "channel": "alipay_pc_direct",
+			  "success_url": "www.sfm.com/order/pay_complete?order_id=400000002"
+			}
 		}
 	
 	> channel = "wx_pub_qr" or "alipay_pc_direct"   
@@ -433,6 +436,27 @@
 
 	> 额度卡展示了订单的额度卡状态，必须订单状态state=1表示已付款
 - 	【参数】
+
+####1.额度卡付款
+	/api/credit_card/pay
+-	【权限】U
+-	【说明】
+
+	> 
+- 	【参数】
+
+		{
+		"pay_params":
+			{
+			  "order_id": "14784316383",
+			  "channel": "alipay_pc_direct",
+			  "success_url": "www.sfm.com/order/pay_complete?order_id=400000002"
+			}
+		}
+	
+	> channel = "wx_pub_qr" or "alipay_pc_direct"   
+	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
+	
 
 
 
