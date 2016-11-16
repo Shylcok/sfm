@@ -57,5 +57,5 @@ class BaseRepo(object):
     """属性装饰器,保证只读"""
     @property
     def db(self):
-        DB.reconnect()
+        # DB.reconnect()
         return DB

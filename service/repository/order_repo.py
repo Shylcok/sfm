@@ -36,10 +36,15 @@ class OrderRepo(BaseRepo):
     @run_on_executor
     def select_by_user_id_state(self, user_id, state, page, count):
         sql = """
-            select * from {} where user_id=%s where status=1 and state=%s limit %s,%s
+            select * from {} where user_id=%s and status=1 and state=%s limit %s,%s
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id, state, (page-1)*count, count)
-        return res
+
+        sql = """
+            select 1 from {} where user_id=%s and status=1 and state=%s
+        """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, user_id, state)
+        return res, total
 
     @run_on_executor
     def select_by_user_id_all(self, user_id, page, count):
@@ -47,7 +52,12 @@ class OrderRepo(BaseRepo):
             select * from {} where user_id=%s and status=1 limit %s,%s
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, user_id, (page-1)*count, count)
-        return res
+
+        sql = """
+            select 1 from {} where user_id=%s and status=1
+        """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, user_id)
+        return res, total
 
     @run_on_executor
     def select_for_pay(self, user_id, order_id):

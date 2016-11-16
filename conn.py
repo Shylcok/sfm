@@ -21,7 +21,7 @@ from settings import CONFIG
 DATABASE = CONFIG['DATABASE']
 db = torndb.Connection('%s:%s' % (DATABASE['HOST'], DATABASE['PORT']),
                        DATABASE['NAME'], user=DATABASE['USER'],
-                       password=DATABASE['PASSWD'], max_idle_time=25200,
+                       password=DATABASE['PASSWD'], max_idle_time=60,
                        charset='utf8mb4', time_zone="+8:00"
                        )
 

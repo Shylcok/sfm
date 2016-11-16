@@ -295,20 +295,22 @@ class OrderService(BaseService):
     def get_order_list(self, user_id, order_type, page, count):
         """
         获取我的订单列表
+        :param count:
+        :param page:
         :param order_type:
         :param user_id:
         :return:
         """
         if order_type == 'all':
-            res = yield self.context_repos.order_repo.select_by_user_id_all(user_id, page, count)
+            res, total = yield self.context_repos.order_repo.select_by_user_id_all(user_id, page, count)
         elif order_type == 'need_pay':
-            res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 0, page, count)
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 0, page, count)
         elif order_type == 'need_send':
-            res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 1, page, count)
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 1, page, count)
         elif order_type == 'need_receive':
-            res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 2, page, count)
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 2, page, count)
         elif order_type == 'complete':
-            res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 5, page, count)
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 5, page, count)
         else:
             raise gen.Return({'code': 201, 'msg': 'type参数错误'})
         for order in res:
@@ -316,7 +318,6 @@ class OrderService(BaseService):
             sku_orders = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
             order['skus_info'] = sku_orders
 
-        total = len(res)
         pagination = Common().pagination(total, page, count)
         raise gen.Return({'code': 0, 'msg': '获取成功', 'data': {'pagination': pagination, 'order_list': res}})
 
