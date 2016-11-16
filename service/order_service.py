@@ -311,6 +311,10 @@ class OrderService(BaseService):
             res = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 5, page, count)
         else:
             raise gen.Return({'code': 201, 'msg': 'type参数错误'})
+        for order in res:
+            order_id = order['order_id']
+            sku_orders = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+            order['skus_info'] = sku_orders
 
         total = len(res)
         pagination = Common().pagination(total, page, count)
