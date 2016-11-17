@@ -90,16 +90,16 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
-    def update_state_2(self, order_id):
+    def update_state_2(self, order_id, logistics_id):
         """
         发货
         :param order_id:
         :return:
         """
         sql = """
-            update {} set state=2 where order_id=%s and state=1
+            update {} set state=2, logistics_id=%s where order_id=%s and state=1
         """.format(self.TABLE_NAME)
-        res = self.db.execute_lastrowid(sql, order_id)
+        res = self.db.execute_lastrowid(sql, logistics_id, order_id)
         return res
 
     @run_on_executor

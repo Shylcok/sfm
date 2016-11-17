@@ -373,15 +373,19 @@ class OrderService(BaseService):
     def get_order(self, order_id):
         order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         order_sku_infos = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+        order_info['skus_info'] = order_sku_infos
+        address_info = yield self.context_repos.address_repo.select_by_id(order_info['address_id'])
+        order_info['address_info'] = address_info
+
         res = {'order_info': order_info}
 
-        raise gen.Return({'code': 0, 'msg': '获取成功'}.append(res))
+        raise gen.Return({'code': 0, 'msg': '获取成功', 'data': res})
 
     """--------------后端服务——————————————————————————"""
 
     @coroutine
-    def send_out(self, user_id, order_id):
-        res = yield self.context_repos.order_repo.update_state_2(order_id)
+    def send_out(self, user_id, order_id, logistics_id):
+        res = yield self.context_repos.order_repo.update_state_2(order_id, logistics_id)
         if res > 0:
             raise gen.Return({'code': 0, 'msg': '确认发货'})
         else:

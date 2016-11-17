@@ -183,7 +183,8 @@ class OrderHandler(BaseHandler):
         res = yield self.context_services.order_service.get_order_list(user_id, order_type, page, count)
         raise Return(res)
 
-    @handler_decorator(perm='', types={'order_id': str}, plain=False, async=False, finished=True)
+    @coroutine
+    @handler_decorator(perm='', types={'order_id': str}, plain=False, async=True, finished=True)
     def get_order(self, order_id):
         """
         获取订单详情
@@ -226,9 +227,9 @@ class OrderHandler(BaseHandler):
         self.context_services.pay_sevice.refund(refund_params)
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str, 'order_id': str}, plain=False, async=True, finished=True)
-    def send_out(self, user_id, order_id):
-        res = yield self.context_services.order_service.send_out(user_id, order_id)
+    @handler_decorator(perm='', types={'user_id': str, 'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
+    def send_out(self, user_id, order_id, logistics_id):
+        res = yield self.context_services.order_service.send_out(user_id, order_id, logistics_id)
         raise Return(res)
 
 
