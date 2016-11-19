@@ -227,7 +227,7 @@ class OrderHandler(BaseHandler):
         self.context_services.pay_sevice.refund(refund_params)
 
     @coroutine
-    @handler_decorator(perm='', types={'user_id': str, 'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
+    @handler_decorator(perm=0, types={'user_id': str, 'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
     def send_out(self, user_id, order_id, logistics_id):
         res = yield self.context_services.order_service.send_out(user_id, order_id, logistics_id)
         raise Return(res)

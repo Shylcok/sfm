@@ -58,3 +58,5 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 alter table sfm_order add credit_card_id varchar(32) null COMMENT '首付卡id';
 alter table sfm_order add credit_card_state int(10) DEFAULT 0 COMMENT '还款状态, 0 待还款, 1,已还款';
+alter table sfm_order  modify column title varchar(130);
+
