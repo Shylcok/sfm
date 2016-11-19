@@ -36,8 +36,8 @@ class OrderOvertimeTaskService(BaseService):
         # 暂时不需要了,因为设置了支付时间短于过期时间
 
         # check state=0 and set state=5 订单过期,
-        self.context_repos.order_repo.update_state_5(order_id)
-        logging.info('订单过期, order_id=%s' % order_id)
+        res = self.context_repos.order_repo.update_state_5(order_id)
+        logging.info('订单过期, order_id=%s, exe_row_count=%s' % (order_id, res))
         # 解订单库存
         yield self.services.order_service.increase_stocks(order_id)
 
