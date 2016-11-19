@@ -99,7 +99,7 @@ class OrderRepo(BaseRepo):
         sql = """
             update {} set state=2, logistics_id=%s where order_id=%s and state=1
         """.format(self.TABLE_NAME)
-        res = self.db.execute_lastrowid(sql, logistics_id, order_id)
+        res = self.db.execute_rowcount(sql, logistics_id, order_id)
         return res
 
     @run_on_executor
@@ -138,7 +138,7 @@ class OrderRepo(BaseRepo):
         :return:
         """
         sql = """
-            update {} set state=5, reason=%s WHERE order_id=%s and state=0
+            update {} set state=5 WHERE order_id=%s and state=0
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, reason, order_id)
         return res
@@ -166,6 +166,17 @@ class OrderRepo(BaseRepo):
         """.format(self.TABLE_NAME)
         res = self.db.query(sql, credit_id)
         return res
+
+    @run_on_executor
+    def select_for_background(self, u_id, u_mobile, order_id, state, ctime_st, ctime_ed, page, count):
+        sql = """
+            select user_tb.*, order_tb.* from sfm_user as user_tb JOIN sfm_order as order_tb on user_tb.id=order_tb.user_id
+            where user_tb.id like '%' and user_tb.mobile like '%'
+            and order_tb.id like '%' and order_tb.ctime>0 and order_tb.ctime<99999999999
+            order by order_tb.ctime desc limit 0, 10
+        """
+        self.db.query(sql, )
+
 
     def test(self):
         with transaction() as trans:

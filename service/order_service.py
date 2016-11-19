@@ -390,12 +390,16 @@ class OrderService(BaseService):
     """--------------后端服务——————————————————————————"""
 
     @coroutine
-    def send_out(self, user_id, order_id, logistics_id):
+    def send_out(self, order_id, logistics_id):
         res = yield self.context_repos.order_repo.update_state_2(order_id, logistics_id)
         if res > 0:
             raise gen.Return({'code': 0, 'msg': '确认发货'})
         else:
             raise gen.Return({'code': 510, 'msg': '确认发货失败'})
+
+    @coroutine
+    def get_list(self, user_id, order_type, page, count):
+        res = yield self.context_repos.order_repo.select_by_order_id_user_id
 
 
 if __name__ == "__main__":

@@ -227,12 +227,17 @@ class OrderHandler(BaseHandler):
         self.context_services.pay_sevice.refund(refund_params)
 
     @coroutine
-    @handler_decorator(perm=0, types={'user_id': str, 'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
-    def send_out(self, user_id, order_id, logistics_id):
-        res = yield self.context_services.order_service.send_out(user_id, order_id, logistics_id)
+    @handler_decorator(perm=0, types={'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
+    def send_out(self, order_id, logistics_id):
+        res = yield self.context_services.order_service.send_out(order_id, logistics_id)
         raise Return(res)
 
+    @coroutine
+    @handler_decorator(perm=0, types={'u_id': str, 'u_mobile': str, 'order_id': str, 'ctime_st': int, 'ctime_ed': int, 'state': int, 'page': int, 'count': int}, plain=False, async=True, finished=True)
+    def list(self, u_id, u_mobile, order_id, ctime_st, ctime_ed, state, page, count):
 
+        res = yield self.context_services.order_service.get_order_list
+        raise Return(res)
 
 
 

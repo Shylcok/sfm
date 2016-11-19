@@ -46,8 +46,8 @@ class CreditCardHandler(BaseHandler):
                          count=10):
         """
         后台给信用卡数据
-        :param user_name:
-        :param mobile:
+        :param u_mobile:
+        :param u_name:
         :param channel:
         :param update_time_st:
         :param update_time_dt:

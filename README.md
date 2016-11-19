@@ -395,20 +395,8 @@
 		  "order_id": "14784316383",
 		  "reason": ""
 		}
-		
-####8.[后台]发货,待完善，需要输入物流信息
-	/api/order/send_out
--	【权限】U
--	【说明】
 
-	> 必须订单状态state=0，表示下单未支付状态
-- 	【参数】	
-
-		{
-		  "order_id": "14784316383"
-		}
-
-####9.支付接口
+####8.支付接口
 	/api/order/pay
 -	【权限】U
 -	【说明】
@@ -428,7 +416,7 @@
 	> channel = "wx_pub_qr" or "alipay_pc_direct"   
 	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 		
-####10.订单详情
+####9.订单详情
 	/api/order/get_order
 -	【权限】U
 -	【说明】
@@ -470,22 +458,6 @@
 	> channel = "wx_pub_qr" or "alipay_pc_direct"   
 	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 	
-####3.[后台]额度卡列表
-	/api/credit_card/get_credit_cards
--	【权限】T
--	【说明】
-
-	> 
-- 	【参数】
-	
-		{"u_name": "",
-		 "u_mobile": "",
-		 "channel": "",
-		 "update_time_st": 0,
-		 "update_time_dt": 99999999999, 
-		 "page": 1,
-		 "count": 10
-		}
 
 
 
@@ -509,8 +481,46 @@
 - 	【参数】
 
 
-		
+###后台接口列表
+####1.[后台]订单列表
+	/api/order/list
+-	【权限】U
+-	【说明】
 
+	> 必须订单状态state=1，表示已支付状态
+	> logistics_id 为该物流号
+- 	【参数】
+
+
+####2.[后台]发货,需要输入物流信息id
+	/api/order/send_out
+-	【权限】U
+-	【说明】
+
+	> 必须订单状态state=1，表示已支付状态
+	> logistics_id 为该物流号
+- 	【参数】	
+
+		{
+		  "order_id": "14784316383",
+		  "logistics_id": "adbc111111"
+		}
+####3.[后台]额度卡列表
+	/api/credit_card/get_credit_cards
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+	
+		{"u_name": "",
+		 "u_mobile": "",
+		 "channel": "",
+		 "update_time_st": 0,
+		 "update_time_dt": 99999999999, 
+		 "page": 1,
+		 "count": 10
+		}
 	
 	
 	
