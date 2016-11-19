@@ -348,6 +348,8 @@
 		need_send	 	代发货		
 		need_receive 待收货
 		complete		已完成
+		cancel			已取消
+		overtime		已过期
 
 ####4.支付页面订单简讯
 	/api/order/get_order_brief_for_pay

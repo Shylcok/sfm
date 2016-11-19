@@ -310,6 +310,10 @@ class OrderService(BaseService):
         elif order_type == 'need_receive':
             res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 2, page, count)
         elif order_type == 'complete':
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 3, page, count)
+        elif order_type == 'cancel':
+            res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 4, page, count)
+        elif order_type == 'overtime':
             res, total = yield self.context_repos.order_repo.select_by_user_id_state(user_id, 5, page, count)
         else:
             raise gen.Return({'code': 201, 'msg': 'type参数错误'})
