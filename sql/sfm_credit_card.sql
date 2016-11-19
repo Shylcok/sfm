@@ -32,3 +32,6 @@ CREATE TABLE `sfm_credit_card` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='信用额度卡表';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+alter table sfm_credit_card add channel VARCHAR(50) not null DEFAULT 'sfm' COMMENT '渠道';
+alter table sfm_credit_card add update_time int(11) NOT null DEFAULT unix_timestamp(now()) COMMENT '更新时间';

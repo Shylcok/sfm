@@ -46,3 +46,17 @@ class CreditCardRepo(BaseRepo):
         res = self.db.execute_rowcount(sql, cost_amount, card_id)
         return res
 
+    @run_on_executor
+    def select_user_card(self, user_name, mobile, channel, update_time_st, update_time_ed, page, count):
+        sql = """
+        select user_tb.*, card_tb.* from sfm_user as user_tb
+        join sfm_credit_card as card_tb on user_tb.id=card_tb.user_id
+        where user_tb.user_name like %s and user_tb.mobile like %s
+        and  card_tb.channel like %s and card_tb.update_time<%s and card_tb.update_time>%s
+        limit %s,%s
+        """
+        user_name = '%' + user_name + '%'
+        mobile = '%' + mobile + '%'
+        channel = '%' + channel + '%'
+        res = self.db.query(sql, user_name, mobile, channel, update_time_ed, update_time_st, (page-1)*count, count)
+        return res

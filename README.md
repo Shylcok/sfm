@@ -448,7 +448,7 @@
 	> 额度卡展示了订单的额度卡状态，必须订单状态state=1表示已付款
 - 	【参数】
 
-####1.额度卡付款
+####2.额度卡付款
 	/api/credit_card/pay
 -	【权限】U
 -	【说明】
@@ -468,6 +468,22 @@
 	> channel = "wx_pub_qr" or "alipay_pc_direct"   
 	> success_url 支付宝方式下，支付成功的回调地址，一般用来展示支付结果页
 	
+####3.[后台]额度卡列表
+	/api/credit_card/get_credit_cards
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+	
+		{"u_name": "",
+		 "u_mobile": "",
+		 "channel": "",
+		 "update_time_st": 0,
+		 "update_time_dt": 99999999999, 
+		 "page": 1,
+		 "count": 10
+		}
 
 
 

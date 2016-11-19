@@ -6,6 +6,7 @@
     <mapping directory="$PROJECT_DIR$/../55haitao_gw" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../55haitao_sns" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../black" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cateDataChangeNotify" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../contractor" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../mallHomePage" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../mallHomePageTemplateManager" vcs="Git" />

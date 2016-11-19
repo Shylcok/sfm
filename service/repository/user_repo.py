@@ -76,3 +76,4 @@ class UserRepo(BaseRepo):
             update {} set user_name=%s WHERE id=%s
         """.format(self.TABLE_NAME)
         return self.db.execute_rowcount(sql, new_user_name, user_id)
+

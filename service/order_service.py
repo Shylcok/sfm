@@ -373,6 +373,8 @@ class OrderService(BaseService):
     def get_order(self, order_id):
         order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         order_sku_infos = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+        if order_sku_infos is None:
+            raise gen.Return({'code': 218, 'msg': '订单不存在'})
         order_info['skus_info'] = order_sku_infos
         address_info = yield self.context_repos.address_repo.select_by_id(order_info['address_id'])
         order_info['address_info'] = address_info

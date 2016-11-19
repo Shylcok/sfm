@@ -43,6 +43,7 @@ class PayService(BaseService):
         pay_info['subject'] = "商品"  # 商品的标题，该参数最长为 32 个 Unicode 字符
         pay_info['body'] = orders_info[0]['sku_name']  # 商品的描述信息，该参数最长为 128 个 Unicode 字符
         pay_info['time_expire'] = order_info['overtime']  # 订单失效时间
+        pay_info['metadata'] = {}
         pay_info['metadata']['type'] = 'order_pay'
 
         if pay_params['channel'] == 'alipay_pc_direct':
@@ -77,6 +78,7 @@ class PayService(BaseService):
         pay_info['subject'] = "额度卡还款"  # 商品的标题，该参数最长为 32 个 Unicode 字符
         pay_info['body'] = '额度卡号:%s' % order_info['credit_card_id']  # 商品的描述信息，该参数最长为 128 个 Unicode 字符
         # pay_info['time_expire'] = 0  # 订单失效时间 #  mall 每次支付重启一个新订单, 我们也应该这样,不过时间应该按照商品如订单表时间算过期
+        pay_info['metadata'] = {}
         pay_info['metadata']['type'] = 'card_pay'
         pay_info['metadata']['credit_card_id'] = order_info['credit_card_id']
         if pay_params['channel'] == 'alipay_pc_direct':

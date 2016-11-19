@@ -12,7 +12,6 @@
 @time: 16/11/14 下午7:35
 """
 
-
 from base_service import BaseService
 from constant import GENERATOR_CREDIT_CARD_ID, CREDIT_CARD_AMOUNT
 import logging
@@ -20,7 +19,6 @@ from tornado.gen import coroutine, Return
 
 
 class CreditCardService(BaseService):
-
     def __init__(self, services):
         super(CreditCardService, self).__init__(services)
 
@@ -54,6 +52,8 @@ class CreditCardService(BaseService):
         res = self.context_repos.credit_card_repo.update(cost_amount, card_id)
         raise Return(res)
 
-
-
-
+    @coroutine
+    def get_credit_cards(self, u_name, u_mobile, channel, update_time_st, update_time_dt, page,
+                         count):
+        user_cards = yield self.context_repos.credit_card_repo.select_user_card(u_name, u_mobile, channel, update_time_st, update_time_dt, page, count)
+        raise Return(user_cards)
