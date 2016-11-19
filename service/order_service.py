@@ -398,8 +398,26 @@ class OrderService(BaseService):
             raise gen.Return({'code': 510, 'msg': '确认发货失败'})
 
     @coroutine
-    def get_list(self, user_id, order_type, page, count):
-        res = yield self.context_repos.order_repo.select_by_order_id_user_id
+    def get_list(self, u_id, u_mobile, order_id, ctime_st, ctime_ed, order_type, page, count):
+        if order_type == 'all':
+            orders, total = yield self.context_repos.order_repo.select_for_background_all(u_id, u_mobile, order_id, ctime_st, ctime_ed, page, count)
+        else:
+            if order_type == 'need_pay':
+                state = 0
+            elif order_type == 'need_send':
+                state = 1
+            elif order_type == 'need_receive':
+                state = 2
+            elif order_type == 'complete':
+                state = 3
+            elif order_type == 'cancel':
+                state = 4
+            elif order_type == 'overtime':
+                state = 5
+            orders, total = yield self.context_repos.order_repo.select_for_background(u_id, u_mobile, order_id, state, ctime_st, ctime_ed, page, count)
+
+        res = {'orders': orders, 'pagination': self.pagination(total, page, count)}
+        raise gen.Return(res)
 
 
 if __name__ == "__main__":

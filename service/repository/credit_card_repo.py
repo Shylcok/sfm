@@ -59,4 +59,11 @@ class CreditCardRepo(BaseRepo):
         mobile = '%' + mobile + '%'
         channel = '%' + channel + '%'
         res = self.db.query(sql, user_name, mobile, channel, update_time_ed, update_time_st, (page-1)*count, count)
-        return res
+        sql = """
+                select 1 from sfm_user as user_tb
+                join sfm_credit_card as card_tb on user_tb.id=card_tb.user_id
+                where user_tb.user_name like %s and user_tb.mobile like %s
+                and  card_tb.channel like %s and card_tb.update_time<%s and card_tb.update_time>%s
+                """
+        total = self.db.execute_rowcount(sql, user_name, mobile, channel, update_time_ed, update_time_st)
+        return res, total

@@ -344,9 +344,9 @@
 	>order_type:
 	
 		all				全部订单
-		need_pay   	代付款
+		need_pay   		代付款
 		need_send	 	代发货		
-		need_receive 待收货
+		need_receive 	待收货
 		complete		已完成
 		cancel			已取消
 		overtime		已过期
@@ -484,13 +484,31 @@
 ###后台接口列表
 ####1.[后台]订单列表
 	/api/order/list
--	【权限】U
+-	【权限】T
 -	【说明】
-
-	> 必须订单状态state=1，表示已支付状态
-	> logistics_id 为该物流号
 - 	【参数】
 
+		{
+		"u_id": "1", 
+		"u_mobile": "1", 
+		"order_id": "1", 
+		"ctime_st": 0, 
+		"ctime_ed": 99999999999, 
+		"order_type": "all", 
+		"page": 1, 
+		"count": 10
+		}
+
+
+	>order_type:
+	
+		all				全部订单
+		need_pay   		代付款 0
+		need_send	 	代发货 1	
+		need_receive	待收货 2
+		complete		已完成 3
+		cancel			已取消 4
+		overtime		已过期 5
 
 ####2.[后台]发货,需要输入物流信息id
 	/api/order/send_out
@@ -505,6 +523,7 @@
 		  "order_id": "14784316383",
 		  "logistics_id": "adbc111111"
 		}
+		
 ####3.[后台]额度卡列表
 	/api/credit_card/get_credit_cards
 -	【权限】T

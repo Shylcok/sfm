@@ -171,11 +171,38 @@ class OrderRepo(BaseRepo):
     def select_for_background(self, u_id, u_mobile, order_id, state, ctime_st, ctime_ed, page, count):
         sql = """
             select user_tb.*, order_tb.* from sfm_user as user_tb JOIN sfm_order as order_tb on user_tb.id=order_tb.user_id
-            where user_tb.id like '%' and user_tb.mobile like '%'
-            and order_tb.id like '%' and order_tb.ctime>0 and order_tb.ctime<99999999999
-            order by order_tb.ctime desc limit 0, 10
+            where user_tb.id like %s and user_tb.mobile like %s
+            and order_tb.id like %s and order_tb.ctime>%s and order_tb.ctime<%s and order_state=%s
+            order by order_tb.ctime desc limit %s, %s
         """
-        self.db.query(sql, )
+        res = self.db.query(sql, u_id, u_mobile, order_id, ctime_st, ctime_ed, state, (page-1)*count, count)
+        sql = """
+            select 1 from sfm_user as user_tb JOIN sfm_order as order_tb on user_tb.id=order_tb.user_id
+            where user_tb.id like %s and user_tb.mobile like %s
+            and order_tb.id like %s and order_tb.ctime>%s and order_tb.ctime<%s and order_state=%s
+        """
+        total = self.db.execute_rowcount(sql, u_id, u_mobile, order_id, ctime_st, ctime_ed, state,)
+        return res, total
+
+    @run_on_executor
+    def select_for_background_all(self, u_id, u_mobile, order_id, ctime_st, ctime_ed, page, count):
+        sql = """
+            select user_tb.*, order_tb.* from sfm_user as user_tb JOIN sfm_order as order_tb on user_tb.id=order_tb.user_id
+            where user_tb.id like %s and user_tb.mobile like %s
+            and order_tb.id like %s and order_tb.ctime>%s and order_tb.ctime<%s
+            order by order_tb.ctime desc limit %s, %s
+        """
+        u_id = '%' + u_id + '%'
+        u_mobile = '%' + u_mobile + '%'
+        order_id = '%' + order_id + '%'
+        res = self.db.query(sql, u_id, u_mobile, order_id, ctime_st, ctime_ed, (page-1)*count, count)
+        sql = """
+            select 1 from sfm_user as user_tb JOIN sfm_order as order_tb on user_tb.id=order_tb.user_id
+            where user_tb.id like %s and user_tb.mobile like %s
+            and order_tb.id like %s and order_tb.ctime>%s and order_tb.ctime<%s
+        """
+        total = self.db.execute_rowcount(sql, u_id, u_mobile, order_id, ctime_st, ctime_ed)
+        return res, total
 
 
     def test(self):

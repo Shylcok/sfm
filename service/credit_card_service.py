@@ -55,5 +55,6 @@ class CreditCardService(BaseService):
     @coroutine
     def get_credit_cards(self, u_name, u_mobile, channel, update_time_st, update_time_dt, page,
                          count):
-        user_cards = yield self.context_repos.credit_card_repo.select_user_card(u_name, u_mobile, channel, update_time_st, update_time_dt, page, count)
-        raise Return(user_cards)
+        user_cards, total = yield self.context_repos.credit_card_repo.select_user_card(u_name, u_mobile, channel, update_time_st, update_time_dt, page, count)
+        res = {'credit_cards': user_cards, 'pagination': self.pagination(total, page, count)}
+        raise Return(res)

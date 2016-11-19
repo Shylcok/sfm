@@ -27,3 +27,6 @@ class BaseService(object):
     def __init__(self, services):
         self.services = services
 
+    def pagination(self, total, page, count):
+        return {'total': total, 'page': page, 'count': count}
+

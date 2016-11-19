@@ -15,6 +15,7 @@ from handler.base_handler import BaseHandler
 from core.handler_decorator import handler_decorator
 from tornado.gen import coroutine
 from tornado.gen import Return
+import time
 
 
 class OrderHandler(BaseHandler):
@@ -233,11 +234,11 @@ class OrderHandler(BaseHandler):
         raise Return(res)
 
     @coroutine
-    @handler_decorator(perm=0, types={'u_id': str, 'u_mobile': str, 'order_id': str, 'ctime_st': int, 'ctime_ed': int, 'state': int, 'page': int, 'count': int}, plain=False, async=True, finished=True)
-    def list(self, u_id, u_mobile, order_id, ctime_st, ctime_ed, state, page, count):
-
-        res = yield self.context_services.order_service.get_order_list
+    @handler_decorator(perm=0, types={'u_id': str, 'u_mobile': str, 'order_id': str, 'ctime_st': int, 'ctime_ed': int,
+                                      'order_type': str, 'page': int, 'count': int}, plain=False, async=True,
+                       finished=True)
+    def list(self, u_id='', u_mobile='', order_id='', ctime_st=0, ctime_ed=time.time(), order_type='all', page=1,
+             count=10):
+        res = yield self.context_services.order_service.get_list(u_id, u_mobile, order_id, ctime_st, ctime_ed,
+                                                                 order_type, page, count)
         raise Return(res)
-
-
-
