@@ -31,3 +31,5 @@ CREATE TABLE `sfm_cart` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车表';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+alter table sfm_cart add first_price int(10) null COMMENT '首付价格';

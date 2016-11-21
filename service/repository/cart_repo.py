@@ -59,6 +59,13 @@ class CartRepo(BaseRepo):
         res = self.db.execute_rowcount(sql, sku_count, user_id, sku_id)
         return res
 
+    def update_first_price(self, user_id, sku_id, first_price):
+        sql = """
+            update {} set first_price=%s WHERE user_id=%s and sku_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_rowcount(sql, first_price, user_id, sku_id)
+        return res
+
     def delete(self, user_id, sku_id):
         sql = """
             delete from {} WHERE user_id=%s and sku_id=%s

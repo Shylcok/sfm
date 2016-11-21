@@ -52,21 +52,25 @@ class CartService(BaseService):
     #
     #     return cart_lists
 
-    def add_cart(self, user_id, sku_id, sku_inc_count):
+    def add_cart(self, user_id, sku_id, sku_inc_count, first_price):
         cart_sku_info = self.context_repos.cart_repo.select_by_user_id_sku_id(user_id, sku_id)
         if cart_sku_info is not None:
             res = self.update_cart(user_id, sku_id, sku_inc_count + int(cart_sku_info['sku_count']))
+            self.context_repos.cart_repo.update_first_price(user_id, sku_id, first_price)
             return res
         else:
             res = self.context_repos.cart_repo.insert(user_id, sku_id, sku_inc_count)
+            self.context_repos.cart_repo.update_first_price(user_id, sku_id, first_price)
             return res
 
-    def update_cart(self, user_id, sku_id, sku_count):
+    def update_cart(self, user_id, sku_id, sku_count, first_price):
         if sku_count == 0:
             res = self.context_repos.cart_repo.delete(user_id, sku_id)
+            self.context_repos.cart_repo.update_first_price(user_id, sku_id, first_price)
             return res
         else:
             res = self.context_repos.cart_repo.update(user_id, sku_id, sku_count)
+            self.context_repos.cart_repo.update_first_price(user_id, sku_id, first_price)
             return res
 
     def del_cart(self, user_id, sku_ids):

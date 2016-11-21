@@ -18,8 +18,8 @@ sys.setdefaultencoding('utf-8')
 
 from celery import Celery
 from handler.base_handler import BaseHandler
-from tornado.gen import coroutine
 from tornado.gen import Return
+from tornado.ioloop import IOLoop
 
 celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 from celery.utils.log import get_task_logger
@@ -32,7 +32,16 @@ logger = get_task_logger(__name__)
 def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失效的任务
     try:
         logger.info('===================> exec_task_order_overtime order_id=%s' % order_id)
-        success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
+        IOLoop.current().run_sync(lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
+        # success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
+        # while True:
+        #     try:
+        #         success.next()
+        #     except Exception, e:
+        #         logger.warn('success.next over: %s' % e.message)
+        #         break
+        success = True
+        logger.info('process result: %s' % success)
         if success is False:
             logger.error(
                 '<================order_overtime_task_service.process_over_time Failed, order_id=%s' % order_id)
@@ -45,5 +54,5 @@ def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失
         raise self.retry(exc=exc, countdown=3)  # 3 秒后继续尝试
 
 
-if __name__ == "__main__":
-    exec_task_order_overtime(1, '119')
+# if __name__ == "__main__":
+#     exec_task_order_overtime(1, 110)

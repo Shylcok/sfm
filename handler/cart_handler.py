@@ -19,17 +19,18 @@ from tornado import gen
 class CartHandler(BaseHandler):
     """-------------前端用户接口----------------"""
 
-    @handler_decorator(perm=1, types={'user_id': str, 'sku_id': str, 'sku_inc_count': int}, plain=False, async=False,
+    @handler_decorator(perm=1, types={'user_id': str, 'sku_id': str, 'sku_inc_count': int, 'first_price': int}, plain=False, async=False,
                        finished=True)
-    def add_cart(self, user_id, sku_id, sku_inc_count):
+    def add_cart(self, user_id, sku_id, sku_inc_count, first_price=0):
         """
         添加购物车
+        :param first_price:
+        :param sku_inc_count:
         :param user_id:
         :param sku_id:
-        :param sku_count:
         :return:
         """
-        res = self.context_services.cart_service.add_cart(user_id, sku_id, sku_inc_count)
+        res = self.context_services.cart_service.add_cart(user_id, sku_id, sku_inc_count, first_price)
         return res
 
     @gen.coroutine
@@ -53,16 +54,17 @@ class CartHandler(BaseHandler):
         res = self.context_services.cart_service.cart_count(user_id)
         return res
 
-    @handler_decorator(perm=1, types={'user_id': str, 'sku_id': str, 'sku_count': int}, plain=False, async=False, finished=True)
-    def update_cart(self, user_id, sku_id, sku_count):
+    @handler_decorator(perm=1, types={'user_id': str, 'sku_id': str, 'sku_count': int, 'first_price': int}, plain=False, async=False, finished=True)
+    def update_cart(self, user_id, sku_id, sku_count, first_price=0):
         """
         更新购物车
+        :param first_price:
         :param sku_count:
         :param sku_id:
         :param user_id:
         :return:
         """
-        res = self.context_services.cart_service.update_cart(user_id, sku_id, sku_count)
+        res = self.context_services.cart_service.update_cart(user_id, sku_id, sku_count, first_price)
         return res
 
     @handler_decorator(perm=1, types={'user_id': int, 'sku_ids': list}, plain=False, async=False, finished=True)

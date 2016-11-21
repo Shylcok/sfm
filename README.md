@@ -202,7 +202,8 @@
 
 		{
 		  "sku_id":"1",
-		  "sku_inc_count":1
+		  "sku_inc_count":1,
+		  "first_price": 100
 		}
 		
 ####2.计算购物车sku数量
@@ -227,7 +228,8 @@
 
 		{
 		  "sku_id":"1",
-		  "sku_count":1
+		  "sku_count":1,
+		  "first_price": 100
 		}
 		
 ####5.删除购物车

@@ -130,7 +130,7 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
-    def update_state_5(self, order_id, reason):
+    def update_state_5(self, order_id):
         """
         订单过期
         :param order_id:
