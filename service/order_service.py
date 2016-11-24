@@ -53,9 +53,14 @@ class OrderGenerator(BaseService):
                 sku_info['order_first_price'] = first_price
                 # sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
 
-                self.order_sku_count += sku_count
-                self.order_sku_amount += sku_count * int(sku_info['realPrice'])
-                self.credit_amount -= self.order_sku_amount - sku_count * sku_info['order_first_price']
+                sku_amount = sku_count * int(sku_info['realPrice'])
+                first_amount = sku_count * sku_info['order_first_price']
+                credit_amount = sku_amount - first_amount
+
+                self.order_sku_count += sku_count  # 商品价格
+                self.order_sku_amount += sku_amount  # 商品数量
+                self.credit_amount -= credit_amount  # 购物卡价格
+
                 self.pay_amount = self.order_sku_amount + self.credit_amount + self.ship_amount
                 self.order_sku_infos.append(sku_info)
             else:
@@ -86,9 +91,14 @@ class OrderGenerator(BaseService):
                     sku_info['order_first_price'] = first_price
                     # sku_info['order_credit_price'] = int(sku_info['realPrice']) - first_price
 
-                    self.order_sku_count += sku_count
-                    self.order_sku_amount += sku_count * int(sku_info['realPrice'])
-                    self.credit_amount -= self.order_sku_amount - sku_count * sku_info['order_first_price']
+                    sku_amount = sku_count * int(sku_info['realPrice'])
+                    first_amount = sku_count * sku_info['order_first_price']
+                    credit_amount = sku_amount - first_amount
+
+                    self.order_sku_count += sku_count  # 商品价格
+                    self.order_sku_amount += sku_amount  # 商品数量
+                    self.credit_amount -= credit_amount  # 购物卡价格
+
                     self.pay_amount = self.order_sku_amount + self.credit_amount + self.ship_amount
                     self.order_sku_infos.append(sku_info)
                 else:
