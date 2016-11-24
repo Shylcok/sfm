@@ -51,7 +51,7 @@ class WebhooksService(BaseService):
                 time = order_data['time_paid']
                 event['_id'] = event['id']
                 """支付信息保存"""
-                has_mongodb_pay = self.context_repos.pay_mongodb.find({'_id': event['id']})
+                has_mongodb_pay = self.context_repos.pay_mongodb.find_one({'_id': event['id']})
                 # TODO: 控制并发引起多次调用webhook,没有加锁
                 if has_mongodb_pay is not None:
                     raise Return({'code': 0, 'msg': '消息已经接过过'})

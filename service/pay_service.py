@@ -52,7 +52,7 @@ class PayService(BaseService):
             )
         elif pay_params['channel'] == 'wx_pub_qr':
             pay_info['extra'] = dict(
-                product_id=pay_params['product_id']
+                product_id=orders_info[0]['sku_id']
             )
         res = PayProcessor().pay(pay_info)
         raise Return(res)

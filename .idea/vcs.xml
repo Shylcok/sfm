@@ -2,12 +2,15 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../example/pingpp-html5" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../example/pingpp-js" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../example/pingpp-python" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../55haitao_gw" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../55haitao_sns" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../black" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../cateDataChangeNotify" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../contractor" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../hotWordcode" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../mallHomePage" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../mallHomePageTemplateManager" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../mallTemplateManager" vcs="Git" />

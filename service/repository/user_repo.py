@@ -52,7 +52,6 @@ class UserRepo(BaseRepo):
         """.format(self.TABLE_NAME)
         return self.db.get(sql, user_name, pwd_md5)
 
-
     def select_by_user_id_pwd_md5(self, user_id, old_pwd_md5):
         sql = """
             select * from {} WHERE id=%s and pwd_md5=%s
