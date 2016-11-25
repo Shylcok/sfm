@@ -112,7 +112,7 @@ class OrderRepo(BaseRepo):
         sql = """
             update {} set state=3 where order_id=%s and state=2
         """.format(self.TABLE_NAME)
-        res = self.db.execute_lastrowid(sql, order_id)
+        res = self.db.execute_rowcount(sql, order_id)
         return res
 
     @run_on_executor

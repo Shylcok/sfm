@@ -12,6 +12,7 @@
 @time: 16/11/3 下午11:57
 """
 import sys
+
 sys.path.append(sys.path[0] + '/../')
 
 from base_service import BaseService
@@ -25,7 +26,6 @@ celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 
 
 class OrderOvertimeTaskService(BaseService):
-
     def __init__(self, services):
         super(OrderOvertimeTaskService, self).__init__(services)
 
@@ -71,8 +71,13 @@ class OrderOvertimeTaskService(BaseService):
         card_amount = order_info['credit_amount']
         order_id = order_info['order_id']
         mobile = self.context_repos.user_repo.select_by_user_id(order_info['user_id'])
-        sms.send_sms('你有一条还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount), mobile)
-        logging.info('发送催款短信, order_id=%s'% order_id)
+        msg = '你有一条还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount)
+        res = sms.send_sms(msg, mobile)
+        res_tuple = res.split(',')
+        if res_tuple[1] == '0':
+            logging.info('发送催款短信, order_id=%s, msg=%s, mobile=%s' % (order_id, msg, mobile))
+        else:
+            logging.error('发送催款短信失败, order_id=%s, msg=%s, mobile=%s' % (order_id, msg, mobile))
 
     def card_borrow_celery(self, order_id, card_id):
         """
@@ -86,7 +91,8 @@ class OrderOvertimeTaskService(BaseService):
                                         , countdown=CONST_CARD_BORROW_DURATION_CELERY)  # 推送消息
         order_card_id = order_id + card_id
         self.context_repos.celery_redis.set(order_card_id, push_task_id, CONST_CARD_BORROW_DURATION_CELERY)
-        logging.info('开始一个新的催款任务, order_id=%s, card_id=%s, push_task_id=%s, redis_order_card_id=%s' % (order_id, card_id, push_task_id, order_card_id))
+        logging.info('开始一个新的催款任务, order_id=%s, card_id=%s, push_task_id=%s, redis_order_card_id=%s' % (
+        order_id, card_id, push_task_id, order_card_id))
 
     def card_pay_celery(self, order_id, card_id):
         """
@@ -99,16 +105,10 @@ class OrderOvertimeTaskService(BaseService):
         push_task_id = self.context_repos.celery_redis.get(order_card_id)
         celery.control.revoke(push_task_id, terminate=True)
         self.context_repos.celery_redis.delete(order_card_id)
-        logging.info('取消催款, 任务队列和redis中task 清除, order_id=%s, card_id=%s, push_task_id=%s, order_card_id=%s' % (order_id, card_id, push_task_id, order_card_id))
-
+        logging.info('取消催款, 任务队列和redis中task 清除, order_id=%s, card_id=%s, push_task_id=%s, order_card_id=%s' % (
+        order_id, card_id, push_task_id, order_card_id))
 
 
 if __name__ == "__main__":
     service = OrderOvertimeTaskService(object)
     service.commit_order_celery('1119')
-
-
-
-
-
-
