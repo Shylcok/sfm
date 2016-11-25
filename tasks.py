@@ -54,7 +54,7 @@ def exec_task_card_borrow(self, order_id):  # 订单到期后,执行订单失效
     try:
         logger.info('===================> exec_task_card_borrow order_id=%s' % order_id)
         IOLoop.current().run_sync(
-            lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
+            lambda: BaseHandler.context_services.order_overtime_task_service.process_remind_card_notify(order_id))
         # f = BaseHandler.context_services.order_overtime_task_service.process_remind_card_notify(order_id)
         success = True
         logger.info('process result: %s' % success)
