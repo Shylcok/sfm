@@ -63,7 +63,7 @@ class OrderOvertimeTaskService(BaseService):
         push_task_id = self.context_repos.celery_redis.get(order_id)
         celery.control.revoke(push_task_id, terminate=True)
         self.context_repos.celery_redis.delete(order_id)
-        logging.info('支付完后取消订单, 任务队列和redis中task 清除, order_id=%s, push_task_id=%s' % (order_id % push_task_id))
+        logging.info('支付完后取消订单, 任务队列和redis中task 清除, order_id=%s, push_task_id=%s' % (order_id, push_task_id))
 
     @coroutine
     def process_remind_card_notify(self, order_id):
