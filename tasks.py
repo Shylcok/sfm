@@ -32,16 +32,9 @@ logger = get_task_logger(__name__)
 def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失效的任务
     try:
         logger.info('===================> exec_task_order_overtime order_id=%s' % order_id)
-        # IOLoop.current().run_sync(lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
-        f = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
-        success = f.result()
-        # while True:
-        #     try:
-        #         success.next()
-        #     except Exception, e:
-        #         logger.warn('success.next over: %s' % e.message)
-        #         break
-        # success = True
+        IOLoop.current().run_sync(lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
+        # f = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
+        success = True
         logger.info('process result: %s' % success)
         if success is False:
             logger.error(
@@ -60,17 +53,10 @@ def exec_task_order_overtime(self, order_id):  # 订单到期后,执行订单失
 def exec_task_card_borrow(self, order_id):  # 订单到期后,执行订单失效的任务
     try:
         logger.info('===================> exec_task_card_borrow order_id=%s' % order_id)
-        # IOLoop.current().run_sync(
-        #     lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
-        # success = BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id)
-        # while True:
-        #     try:
-        #         success.next()
-        #     except Exception, e:
-        #         logger.warn('success.next over: %s' % e.message)
-        #         break
-        f = BaseHandler.context_services.order_overtime_task_service.process_remind_card_notify(order_id)
-        success = f.result()
+        IOLoop.current().run_sync(
+            lambda: BaseHandler.context_services.order_overtime_task_service.process_over_time(order_id))
+        # f = BaseHandler.context_services.order_overtime_task_service.process_remind_card_notify(order_id)
+        success = True
         logger.info('process result: %s' % success)
         if success is False:
             logger.error(
