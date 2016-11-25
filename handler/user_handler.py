@@ -74,6 +74,7 @@ class UserHandler(BaseHandler):
         :return:
         """
         self.clear_cookie('sfm_user_token')
+        self.clear_all_cookies()
         return {'code': 0, 'msg': '注销成功'}
 
     @handler_decorator(perm=1, types={'user_id': str, 'old_pwd': str,}, plain=False, async=False, finished=True)

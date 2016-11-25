@@ -144,6 +144,19 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
+    def update_credit_card_state_1(self, order_id):
+        """
+        还款
+        :param order_id:
+        :return:
+        """
+        sql = """
+            update {} set credit_card_state=1 WHERE order_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_rowcount(sql, order_id)
+        return res
+
+    @run_on_executor
     def select_by_order_id(self, order_id):
         sql = """
             select * from {} where order_id=%s

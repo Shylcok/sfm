@@ -19,6 +19,7 @@ from constant import *
 from celery import Celery
 import logging
 from tornado.gen import coroutine
+import sms
 
 celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 
@@ -63,6 +64,43 @@ class OrderOvertimeTaskService(BaseService):
         celery.control.revoke(push_task_id, terminate=True)
         self.context_repos.celery_redis.delete(order_id)
         logging.info('支付完后取消订单, 任务队列和redis中task 清除, order_id=%s, push_task_id=%s' % (order_id % push_task_id))
+
+    @coroutine
+    def process_remind_card_notify(self, order_id):
+        order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
+        card_amount = order_info['credit_amount']
+        order_id = order_info['order_id']
+        mobile = self.context_repos.user_repo.select_by_user_id(order_info['user_id'])
+        sms.send_sms('你有一条还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount), mobile)
+        logging.info('发送催款短信, order_id=%s'% order_id)
+
+    def card_borrow_celery(self, order_id, card_id):
+        """
+        首付卡借款后, 进入队列
+        :param card_id:
+        :param order_id:
+        :return:
+        """
+        push_task_id = celery.send_task('tasks.exec_task_card_borrow'
+                                        , [order_id]
+                                        , countdown=CONST_CARD_BORROW_DURATION_CELERY)  # 推送消息
+        order_card_id = order_id + card_id
+        self.context_repos.celery_redis.set(order_card_id, push_task_id, CONST_CARD_BORROW_DURATION_CELERY)
+        logging.info('开始一个新的催款任务, order_id=%s, card_id=%s, push_task_id=%s, redis_order_card_id=%s' % (order_id, card_id, push_task_id, order_card_id))
+
+    def card_pay_celery(self, order_id, card_id):
+        """
+        首付卡还款后, 去除消息队列
+        :param card_id:
+        :param order_id:
+        :return:
+        """
+        order_card_id = order_id + card_id
+        push_task_id = self.context_repos.celery_redis.get(order_card_id)
+        celery.control.revoke(push_task_id, terminate=True)
+        self.context_repos.celery_redis.delete(order_card_id)
+        logging.info('取消催款, 任务队列和redis中task 清除, order_id=%s, card_id=%s, push_task_id=%s, order_card_id=%s' % (order_id, card_id, push_task_id, order_card_id))
+
 
 
 if __name__ == "__main__":

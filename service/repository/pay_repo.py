@@ -17,9 +17,9 @@ from service.repository.base_repo import BaseRepo
 class PayRepo(BaseRepo):
     TABLE_NAME = 'sfm_pay'
 
-    def insert(self, water_id, channel_id, channel_water_id, amount, order_id, time):
+    def insert(self, water_id, channel_id, channel_water_id, amount, order_id, time, target_type):
         sql = """
-            insert into {} set water_id=%s, channel_id=%s, channel_water_id=%s, amount=%s, order_id=%s, time=%s
+            insert into {} set water_id=%s, channel_id=%s, channel_water_id=%s, amount=%s, order_id=%s, time=%s, target_type=%s
         """.format(self.TABLE_NAME)
-        res = self.db.execute_lastrowid(sql, water_id, channel_id, channel_water_id, amount, order_id, time)
+        res = self.db.execute_lastrowid(sql, water_id, channel_id, channel_water_id, amount, order_id, time, target_type)
         return res

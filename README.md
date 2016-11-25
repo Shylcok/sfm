@@ -89,7 +89,7 @@
 		}
 
 ####4.注销
-	/api/user/logout
+	/api/user/signout
 -	【权限】U
 -	【说明】
 

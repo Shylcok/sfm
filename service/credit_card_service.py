@@ -45,11 +45,24 @@ class CreditCardService(BaseService):
         raise Return(credit_card)
 
     @coroutine
-    def update_related_credit_card(self, order_id):
+    def update_related_credit_card_for_borrow(self, order_id):
         order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         card_id = order_info['credit_card_id']
         cost_amount = order_info['credit_amount']
         res = self.context_repos.credit_card_repo.update(cost_amount, card_id)
+        """借款信息送入消息队列"""
+        self.services.order_overtime_task_service.card_borrow_celery(order_id, card_id)
+        raise Return(res)
+
+    @coroutine
+    def update_related_credit_card_for_pay(self, order_id):
+        order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
+        card_id = order_info['credit_card_id']
+        cost_amount = order_info['credit_amount']
+        refund = -cost_amount
+        res = self.context_repos.credit_card_repo.update(refund, card_id)
+        """借款信息从消息队列销毁"""
+        self.services.order_overtime_task_service.card_pay_celery(order_id, card_id)
         raise Return(res)
 
     @coroutine

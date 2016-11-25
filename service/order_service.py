@@ -19,6 +19,25 @@ from tornado import gen
 from constant import *
 import json
 from utility.common import Common
+import contextlib
+from tornado.ioloop import IOLoop
+from tornado.gen import Return
+
+
+class CommitOrderError(Exception):
+    def __init__(self, value):
+        self.message = value
+
+    def __str__(self):
+        return self.message
+
+
+class HandleStockError(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
 
 
 class OrderGenerator(BaseService):
@@ -121,6 +140,25 @@ class OrderService(BaseService):
     def __init__(self, services):
         super(OrderService, self).__init__(services)
 
+    @contextlib.contextmanager
+    def make_content_stock(self, order_info):
+        f = self.decrease_stocks(order_info)
+        is_success = f.result()
+        if is_success is False:
+            raise HandleStockError('锁库存失败')
+        try:
+
+            yield {}
+
+        except Exception, err:
+            logging.error('订单提交失败:%s, 解库存' % err)
+            f = self.increase_stocks(order_info.order_id)
+            is_success = f.result()
+            if is_success is False:
+                logging.error('解库存失败, order_id=%s' % order_info.order_id)
+            else:
+                raise err
+
     def get_address(self, user_id):
         res = self.context_repos.address_repo.select_by_user_id(user_id)
         return res
@@ -210,11 +248,69 @@ class OrderService(BaseService):
             sku_id = sku_info['order_sku_id']
             sku_count = sku_info['order_sku_count']
             success = yield self.context_repos.expernal_repo.increase_stock(sku_id, sku_count)
-            print sku_id, sku_count
             if success:
                 logging.info('解锁库存成功, sku_id=%s, sku_count=%s' % (sku_id, sku_count))
             else:
                 logging.error('解锁库存失败, sku_id=%s, sku_count=%s' % (sku_id, sku_count))
+                raise Return(False)
+
+        raise Return(True)
+
+    @coroutine
+    def _commit_order(self, order_info, user_id, address_id, user_note):
+        with self.make_content_stock(order_info) as stock:
+            """订单详细数据 入库, mongodb 和 mysql"""
+            order_info_json = str(order_info)
+            order_info_dict = json.loads(order_info_json)
+            order_info_dict['_id'] = order_info.order_id
+            # 此处选择mongodb 做备份存储,其实完全没有必要, 我们可以认为订单锁库存后一定会入库成功, 子订单也一定会入库成功, 解锁库存应该从mysql的子订单中查找
+            self.context_repos.order_mongodb.insert_one(order_info_dict)
+            # card_id = self.context_repos.credit_card_repo.select(user_id)
+
+            """判断额度卡是否足够"""
+            card_info = self.context_repos.credit_card_repo.select(user_id)
+            remain_amount = card_info['remain_amount']
+            if remain_amount + order_info.credit_amount < 0:
+                logging.warn('额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount))
+                # raise gen.Return({'code': 310, 'msg': '额度卡余额不足, remain_amount=%s, credit_amount=%s' % (
+                #     remain_amount, order_info.credit_amount)})
+                raise CommitOrderError(
+                    '额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount))
+
+            """订单数据如数据库"""
+            last_rowid = self.context_repos.order_repo.insert(order_info.order_id, order_info.ship_amount,
+                                                              order_info.order_sku_amount, order_info.credit_amount,
+                                                              order_info.pay_amount, order_info.order_sku_count,
+                                                              user_id,
+                                                              address_id, user_note, card_info['card_id'])
+            if last_rowid < 0:
+                """订单插入失败,解库存"""
+                # yield self.increase_stocks(order_info.order_id)
+                logging.error('订单提交失败, 订单数据插入数据库错误:')
+                logging.error(order_info.get())
+                # raise gen.Return({'code': 111, 'msg': '订单提交失败, 订单数据生成错误'})
+                raise CommitOrderError('订单提交失败, 订单数据插入数据库错误')
+
+            else:
+                """ 订单生产成功"""
+                logging.info('订单数据库中生成 order_id=%s, 进入过期消息队列' % order_info.order_id)
+                self.services.order_overtime_task_service.commit_order_celery(order_info.order_id)
+
+            """更新订单子表, 和mongodb冗余"""
+            for order_sku_info in order_info.order_sku_infos:
+                sku_id = order_sku_info['skuid']
+                sku_count = order_sku_info['order_sku_count']
+                sku_weight = order_sku_info['weight']
+                sku_amount = int(order_sku_info['realPrice'])
+                sku_name = order_sku_info['name']
+                sku_image_url = order_sku_info['imglist'][0] if (len(order_sku_info['imglist']) > 0) else ''
+                first_price = order_sku_info['order_first_price']
+
+                self.context_repos.sku_order_repo.insert(order_info.order_id, sku_id, sku_count, sku_weight, sku_amount,
+                                                         sku_name,
+                                                         sku_image_url, first_price)
+
+            logging.info('订单提交成功,单号:%s' % order_info.order_id)
 
     @coroutine
     def commit_order(self, user_id, address_id, order_type, cart_list, sku_list, user_note, coupon_code):
@@ -241,57 +337,20 @@ class OrderService(BaseService):
             success = yield order_info.add_sku_list(sku_list)
             if success is False:
                 raise gen.Return({'code': 210, 'msg': '异常数据'})
-
-        """提交订单之前锁库存"""
-        success_descrase_stock = yield self.decrease_stocks(order_info)
-        if success_descrase_stock is False:
-            raise gen.Return(False)
-        else:
-            logging.info('锁库存全部成功, 订单准备插入数据库 order_id=%s' % order_info.order_id)
-
-        """订单详细数据 入库, mongodb 和 mysql"""
-        order_info_json = str(order_info)
-        order_info_dict = json.loads(order_info_json)
-        order_info_dict['_id'] = order_info.order_id
-        # 此处选择mongodb 做备份存储,其实完全没有必要, 我们可以认为订单锁库存后一定会入库成功, 子订单也一定会入库成功, 解锁库存应该从mysql的子订单中查找
-        self.context_repos.order_mongodb.insert_one(order_info_dict)
-        # card_id = self.context_repos.credit_card_repo.select(user_id)
-        card_info = self.context_repos.credit_card_repo.select(user_id)
-        remain_amount = card_info['remain_amount']
-        if remain_amount < order_info.credit_amount:
-            logging.warn('额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount))
-            raise gen.Return({'code': 310, 'msg': '额度卡余额不足, remain_amount=%s, credit_amount=%s' % (remain_amount, order_info.credit_amount)})
-
-        last_rowid = self.context_repos.order_repo.insert(order_info.order_id, order_info.ship_amount,
-                                                          order_info.order_sku_amount, order_info.credit_amount,
-                                                          order_info.pay_amount, order_info.order_sku_count, user_id,
-                                                          address_id, user_note, card_info['card_id'])
-        if last_rowid < 0:
-            """订单插入失败,解库存"""
-            yield self.increase_stocks(order_info.order_id)
-            logging.error('订单提交失败, 订单数据生成错误===》')
-            logging.error(order_info.get())
-            raise gen.Return({'code': 111, 'msg': '订单提交失败, 订单数据生成错误'})
-        else:
-            """ 订单生产成功"""
-            logging.info('订单数据库中生成 order_id=%s, 进入过期消息队列' % order_info.order_id)
-            self.services.order_overtime_task_service.commit_order_celery(order_info.order_id)
-
-        """更新订单子表, 和mongodb冗余"""
-        for order_sku_info in order_info.order_sku_infos:
-            sku_id = order_sku_info['skuid']
-            sku_count = order_sku_info['order_sku_count']
-            sku_weight = order_sku_info['weight']
-            sku_amount = int(order_sku_info['realPrice'])
-            sku_name = order_sku_info['name']
-            sku_image_url = order_sku_info['imglist'][0] if (len(order_sku_info['imglist']) > 0) else ''
-            first_price = order_sku_info['order_first_price']
-
-            self.context_repos.sku_order_repo.insert(order_info.order_id, sku_id, sku_count, sku_weight, sku_amount,
-                                                     sku_name,
-                                                     sku_image_url, first_price)
-
-        logging.info('订单提交成功,单号:%s' % order_info.order_id)
+        #
+        # """提交订单之前锁库存"""
+        # success_descrase_stock = yield self.decrease_stocks(order_info)
+        # if success_descrase_stock is False:
+        #     raise gen.Return(False)
+        # else:
+        #     logging.info('锁库存全部成功, 订单准备插入数据库 order_id=%s' % order_info.order_id)
+        try:
+            res = yield self._commit_order(order_info, user_id, address_id, user_note)
+            if res is False:
+                res
+        except Exception, err:
+            logging.error('提交订单操作失败:%s' % err)
+            raise gen.Return({'code': 271, 'msg': '提交订单操作失败:%s' % err})
 
         """如果来自购物车,设置购物车中的status=0"""
         if order_type == "cart":
@@ -410,7 +469,9 @@ class OrderService(BaseService):
     @coroutine
     def get_list(self, u_id, u_mobile, order_id, ctime_st, ctime_ed, order_type, page, count):
         if order_type == 'all':
-            orders, total = yield self.context_repos.order_repo.select_for_background_all(u_id, u_mobile, order_id, ctime_st, ctime_ed, page, count)
+            orders, total = yield self.context_repos.order_repo.select_for_background_all(u_id, u_mobile, order_id,
+                                                                                          ctime_st, ctime_ed, page,
+                                                                                          count)
         else:
             if order_type == 'need_pay':
                 state = 0
@@ -424,7 +485,8 @@ class OrderService(BaseService):
                 state = 4
             elif order_type == 'overtime':
                 state = 5
-            orders, total = yield self.context_repos.order_repo.select_for_background(u_id, u_mobile, order_id, state, ctime_st, ctime_ed, page, count)
+            orders, total = yield self.context_repos.order_repo.select_for_background(u_id, u_mobile, order_id, state,
+                                                                                      ctime_st, ctime_ed, page, count)
 
         res = {'orders': orders, 'pagination': self.pagination(total, page, count)}
         raise gen.Return(res)

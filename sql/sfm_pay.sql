@@ -34,3 +34,6 @@ CREATE TABLE `sfm_pay` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='支付表';
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+alter table sfm_pay add target_type varchar(20) null COMMENT '支付对象, pay, card';
