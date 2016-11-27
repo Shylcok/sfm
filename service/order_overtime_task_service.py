@@ -20,7 +20,7 @@ from constant import *
 from celery import Celery
 import logging
 from tornado.gen import coroutine
-import sms
+import sms_ali
 
 celery = Celery('tasks', broker='redis://127.0.0.1:6379/0')
 
@@ -72,7 +72,7 @@ class OrderOvertimeTaskService(BaseService):
         order_id = order_info['order_id']
         mobile = self.context_repos.user_repo.select_by_user_id(order_info['user_id'])
         msg = '你有一条还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount)
-        res = sms.send_sms(msg, mobile)
+        res = sms_ali.send_sms(msg, mobile)
         res_tuple = res.split(',')
         if res_tuple[1] == '0':
             logging.info('发送催款短信, order_id=%s, msg=%s, mobile=%s' % (order_id, msg, mobile))

@@ -19,14 +19,14 @@ import time
 
 class CreditCardHandler(BaseHandler):
     @gen.coroutine
-    @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=True, finished=True)
-    def detail(self, user_id):
+    @handler_decorator(perm=1, types={'user_id': str, 'page': int, 'count': int, 'type': str}, plain=False, async=True, finished=True)
+    def detail(self, user_id, type, page, count):
         """
         获取额度卡信息
         :param user_id:
         :return:
         """
-        res = yield self.context_services.credit_card_service.detail(user_id)
+        res = yield self.context_services.credit_card_service.detail(user_id, type, page, count)
         raise gen.Return(res)
 
     @gen.coroutine

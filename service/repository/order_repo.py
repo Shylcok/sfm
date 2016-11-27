@@ -173,12 +173,57 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
-    def select_by_credit_card_id(self, credit_id):
+    def select_by_credit_card_id_all(self, credit_id, page=1, count=10):
         sql = """
-            select * from {} where credit_card_id=%s and state=1
+            select * from {} where credit_card_id=%s and state=1 limit %s, %s
         """.format(self.TABLE_NAME)
-        res = self.db.query(sql, credit_id)
-        return res
+        res = self.db.query(sql, credit_id, (page-1)*count, count)
+
+        sql = """
+                    select 1 from {} where credit_card_id=%s and state=1
+                """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, credit_id)
+        return res, total
+
+    @run_on_executor
+    def select_by_credit_card_id_need_pay(self, credit_id, page=1, count=10):
+        sql = """
+            select * from {} where credit_card_id=%s and state=1 and credit_card_state=0 limit %s, %s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, credit_id, (page-1)*count, count)
+
+        sql = """
+                    select 1 from {} where credit_card_id=%s and state=1 and credit_card_state=0
+                """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, credit_id)
+        return res, total
+
+    @run_on_executor
+    def select_by_credit_card_id_over_time(self, credit_id, page=1, count=10):
+        sql = """
+            select * from {} where credit_card_id=%s and state=1 and credit_card_state=0 and %s-ctime>%s limit %s, %s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, credit_id, time.time(), CONST_CARD_BORROW_DURATION_CELERY, (page-1)*count, count)
+
+        sql = """
+            select 1 from {} where credit_card_id=%s and state=1 and credit_card_state=0 and %s-ctime>%s
+        """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, credit_id, time.time(), CONST_CARD_BORROW_DURATION_CELERY)
+
+        return res, total
+
+    @run_on_executor
+    def select_by_credit_card_id_has_pay(self, credit_id, page=1, count=10):
+        sql = """
+            select * from {} where credit_card_id=%s and state=1 and credit_card_state=1 limit %s, %s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, credit_id, (page-1)*count, count)
+
+        sql = """
+                    select 1 from {} where credit_card_id=%s and state=1 and credit_card_state=1
+                """.format(self.TABLE_NAME)
+        total = self.db.execute_rowcount(sql, credit_id)
+        return res, total
 
     @run_on_executor
     def select_for_background(self, u_id, u_mobile, order_id, state, ctime_st, ctime_ed, page, count):

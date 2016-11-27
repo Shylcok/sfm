@@ -440,6 +440,14 @@
 	> 额度卡展示了订单的额度卡状态，必须订单状态state=1表示已付款
 - 	【参数】
 
+		{
+		  "type": "all",
+		  "page":1,
+		  "count":10
+		}
+		
+	>type= all,need_pay,over_time,has_pay
+
 ####2.额度卡付款
 	/api/credit_card/pay
 -	【权限】U
