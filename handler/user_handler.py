@@ -102,9 +102,10 @@ class UserHandler(BaseHandler):
         return res
 
     @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str, 'sex': int}, plain=False, async=False, finished=True)
-    def modify_user_name(self, user_id, new_user_name, sex):
+    def modify_user_info(self, user_id, new_user_name, sex):
         """
         修改用户名
+        :param sex:
         :param user_id:
         :param new_user_name:
         :return:

@@ -118,7 +118,7 @@
 		}
 
 ####6.修改用户名
-	/api/user/modify_user_name
+	/api/user/modify_user_info
 -	【权限】U
 -	【参数】
 
