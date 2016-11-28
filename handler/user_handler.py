@@ -61,10 +61,20 @@ class UserHandler(BaseHandler):
         res, user_token = self.context_services.user_service.signin(mobile_uer_name, pwd)
         if res['code'] == 0:
             self.set_cookie(constant.CONST_COOKIE_USER_TOKEN_NAME, user_token, httponly=True,
-                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)  # 安全cookie 60分钟, js 无法获取该cookie
+                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)  # 用户token,安全cookie 60分钟, js 无法获取该cookie
+
             self.set_cookie(constant.CONST_COOKIE_USER_NAME, res['user_name'],
+                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)  # 用户名
+
+            auth_is_pass = self.context_services.user_service.get_auth(res['user_id'])
+            is_pass = 0
+            if auth_is_pass is not None:
+                is_pass = auth_is_pass['pass']
+            self.set_cookie(constant.CONST_COOKIE_USER_IS_AUTH_PASS, str(is_pass),
                             expires=time.time() + constant.CONST_COOKIE_EXPIRES)
 
+            self.set_cookie(constant.CONST_COOKIE_USER_CARD_ID, str(res['card_id']),
+                            expires=time.time() + constant.CONST_COOKIE_EXPIRES)
         return res
 
     @handler_decorator(perm=0, types={}, plain=False, async=False, finished=True)
@@ -77,7 +87,7 @@ class UserHandler(BaseHandler):
         self.clear_all_cookies()
         return {'code': 0, 'msg': '注销成功'}
 
-    @handler_decorator(perm=1, types={'user_id': str, 'old_pwd': str,}, plain=False, async=False, finished=True)
+    @handler_decorator(perm=1, types={'user_id': str, 'old_pwd': str}, plain=False, async=False, finished=True)
     def modify_pwd(self, user_id, old_pwd, new_pwd):
         """
         修改密码
@@ -91,7 +101,7 @@ class UserHandler(BaseHandler):
             self.logout()
         return res
 
-    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str,}, plain=False, async=False, finished=True)
+    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str}, plain=False, async=False, finished=True)
     def modify_user_name(self, user_id, new_user_name):
         """
         修改用户名
@@ -100,4 +110,40 @@ class UserHandler(BaseHandler):
         :return:
         """
         res = self.context_services.user_service.modify_user_name(user_id, new_user_name)
+        return res
+
+    @handler_decorator(perm=1,
+                       types={'user_id': str, 'real_name': str, 'id_code': str, 'id_card_up': str, 'id_card_down': str},
+                       plain=False, async=False, finished=True)
+    def request_auth(self, user_id, real_name, id_code, id_card_up, id_card_down):
+        """
+        请求认证
+        :param user_id:
+        :param real_name:
+        :param id_code:
+        :param id_card_up:
+        :param id_card_down:
+        :return:
+        """
+        res = self.context_services.user_service.request_auth(user_id, real_name, id_code, id_card_up, id_card_down)
+        return res
+
+    @handler_decorator(perm=1, types={'user_id': str}, plain=False, async=False, finished=True)
+    def get_auth(self, user_id):
+        res = self.context_services.user_service.get_auth(user_id)
+        return res
+
+    """"-----------------后台-------------"""
+
+    @handler_decorator(perm=0, types={'user_id': str, 'is_pass': int, 'note': str}, plain=False, async=False,
+                       finished=True)
+    def set_auth(self, user_id, is_pass, note=''):
+        """
+        请求认证
+        :param user_id:
+        :param is_pass:
+        :param note:
+        :return:
+        """
+        res = self.context_services.user_service.set_auth(user_id, is_pass, note)
         return res

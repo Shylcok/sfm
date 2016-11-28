@@ -22,7 +22,7 @@ class AddressRepo(BaseRepo):
 
     def __init__(self, *args):
         logging.info('init AddressRepo')
-        super(AddressRepo, self).__init__(args)
+        super(AddressRepo, self).__init__(*args)
 
     def select_by_user_id(self, user_id):
         sql = """

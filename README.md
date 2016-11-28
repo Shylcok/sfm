@@ -44,6 +44,17 @@
 	404 NOT FOUND						请求的资源不存在，路由出差
 	500 INTERNAL SERVER ERROR			内部错误
 	
+##2.cookie管理
+
+>	所有cookie的安全期为12小时
+>	用户退出后清除所有cookie  
+>  用户登录后保存的cookie如下:	
+>		
+	sfm_user_token	用户登录权限认证，js无法操作
+	user_name		用户名
+	
+	
+	
 
 ###用户中心接口列表
 
@@ -118,6 +129,23 @@
 ####7.获取用户信息
 	/api/user/get_user_info
 -	【权限】U
+
+####8.请求认证
+	/api/user/set_auth
+-	【权限】U
+- 	【说明】
+
+	> 认证成功的话，cookie中会有认证标示auth_is_pass=1, 否则auth_is_pass=0标示认证不成功
+-	【参数】
+
+		{
+		  "real_name": "suyuan",
+		  "id_code":"123421115",
+		  "id_card_up": "www",
+		  "id_card_down": "wwwww"
+		}
+
+
 
 
 ###订单系统接口列表

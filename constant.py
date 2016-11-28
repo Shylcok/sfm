@@ -20,6 +20,8 @@ import time
 CONST_COOKIE_EXPIRES = 60 * 60 * 12  # 12小时
 CONST_COOKIE_USER_TOKEN_NAME = 'sfm_user_token'
 CONST_COOKIE_USER_NAME = 'user_name'
+CONST_COOKIE_USER_IS_AUTH_PASS = 'auth_is_pass'
+CONST_COOKIE_USER_CARD_ID = 'card_id'
 
 """这里注意,一般mysql中的期限要小于消息队列中的期限, 避免支付过程中,解库存了"""
 CONST_ORDER_OVER_DURATION = 60 * 6  # 订单过期时间:30分钟, mysql

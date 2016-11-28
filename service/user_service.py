@@ -98,7 +98,8 @@ class UserService(BaseService):
         user_token_dic = {'user_id': user['id'], 'user_name': user['user_name'], "mobile": user['mobile'],
                           "token_secret_key": CONFIG['token_secret_key']}
         user_token = self._encrypt(user_token_dic)
-        return {'code': 0, 'msg': '登录成功', 'user_name': user['user_name']}, user_token
+        card_id = self.context_repos.credit_card_repo.select(user['id'])['card_id']
+        return {'code': 0, 'msg': '登录成功', 'user_name': user['user_name'], 'user_id': user['id'], 'card_id': card_id}, user_token
 
     def modify_pwd(self, user_id, old_pwd, new_pwd):
         old_pwd_md5 = hashlib.md5(old_pwd).hexdigest()
@@ -123,3 +124,17 @@ class UserService(BaseService):
             return {'code': 0, 'msg': '用户名修改成功'}
         else:
             return {'code': 116, 'msg': '用户名修改失败,数据库错误'}
+
+    def request_auth(self, user_id, real_name , id_code, id_card_up, id_card_down):
+        res = self.context_repos.auth_repo.insert(user_id, real_name, id_code, id_card_up, id_card_down)
+        return res
+
+    def get_auth(self, user_id):
+        res = self.context_repos.auth_repo.select_by_user_id(user_id)
+        return res
+
+    """-------------后台--------------"""
+
+    def set_auth(self, user_id, is_pass, note):
+        res = self.context_repos.auth_repo.update_by_user_id(user_id, is_pass, note)
+        return res

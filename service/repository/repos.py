@@ -21,6 +21,7 @@ from sku_order_repo import SkuOrderRepo
 from pay_repo import PayRepo
 from credit_card_repo import CreditCardRepo
 from operate_log_repo import OperateLogRepo
+from auth_repo import AuthRepo
 
 from conn import sms_redis, celery_redis, mongo_db
 
@@ -37,6 +38,7 @@ class Repos(object):
         self._pay_repo = PayRepo(self)
         self._credit_card_repo = CreditCardRepo(self)
         self._operate_log_repo = OperateLogRepo(self)
+        self._auth_repo = AuthRepo(self)
 
         self._sms_redis = sms_redis
         self._celery_redis = celery_redis
@@ -94,3 +96,7 @@ class Repos(object):
     @property
     def operate_log_repo(self):
         return self._operate_log_repo
+
+    @property
+    def auth_repo(self):
+        return self._auth_repo
