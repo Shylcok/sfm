@@ -59,3 +59,17 @@ class CreditCardHandler(BaseHandler):
                                                                                update_time_st, update_time_dt, page,
                                                                                count)
         raise gen.Return(res)
+
+    @gen.coroutine
+    @handler_decorator(perm=0, types={'card_id': str, 'inc_amount': int}, plain=False, async=True,
+                       finished=True)
+    def set_credit_cards(self, card_id, inc_amount):
+        res = yield self.context_services.credit_card_service.set_card_amount(card_id, inc_amount)
+        raise gen.Return(res)
+
+    @gen.coroutine
+    @handler_decorator(perm=0, types={'card_id': str, 'page': int, 'count': int}, plain=False, async=True,
+                       finished=True)
+    def get_card_detail(self, card_id, page, count):
+        res = yield self.context_services.credit_card_service.get_card_detail(card_id, page, count)
+        raise gen.Return(res)

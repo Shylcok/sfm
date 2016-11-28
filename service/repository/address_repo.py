@@ -20,8 +20,9 @@ from tornado.concurrent import run_on_executor
 class AddressRepo(BaseRepo):
     TABLE_NAME = 'sfm_address'
 
-    def __init__(self):
+    def __init__(self, *args):
         logging.info('init AddressRepo')
+        super(AddressRepo, self).__init__(args)
 
     def select_by_user_id(self, user_id):
         sql = """

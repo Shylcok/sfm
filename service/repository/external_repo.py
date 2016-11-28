@@ -19,8 +19,14 @@ from tornado.gen import coroutine
 from tornado import gen
 import traceback
 import logging
+from base_repo import BaseRepo
 
-class ExternalRepo(object):
+
+class ExternalRepo(BaseRepo):
+
+    def __init__(self, *args):
+        logging.info('init external repo')
+        super(ExternalRepo, self).__init__(args)
 
     @coroutine
     def get_sku_info(self, sku_id):

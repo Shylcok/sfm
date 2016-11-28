@@ -20,26 +20,28 @@ from order_repo import OrderRepo
 from sku_order_repo import SkuOrderRepo
 from pay_repo import PayRepo
 from credit_card_repo import CreditCardRepo
+from operate_log_repo import OperateLogRepo
 
 from conn import sms_redis, celery_redis, mongo_db
 
 
-
-
 class Repos(object):
-    _user_repo = UserRepo()
-    _address_repo = AddressRepo()
-    _cart_repo = CartRepo()
-    _external_repo = ExternalRepo()
-    _order_repo = OrderRepo()
-    _sku_order_repo = SkuOrderRepo()
-    _pay_repo = PayRepo()
-    _credit_card_repo = CreditCardRepo()
 
-    _sms_redis = sms_redis
-    _celery_redis = celery_redis
+    def __init__(self):
+        self._user_repo = UserRepo(self)
+        self._address_repo = AddressRepo(self)
+        self._cart_repo = CartRepo(self)
+        self._external_repo = ExternalRepo(self)
+        self._order_repo = OrderRepo(self)
+        self._sku_order_repo = SkuOrderRepo(self)
+        self._pay_repo = PayRepo(self)
+        self._credit_card_repo = CreditCardRepo(self)
+        self._operate_log_repo = OperateLogRepo(self)
 
-    _mongodb = mongo_db
+        self._sms_redis = sms_redis
+        self._celery_redis = celery_redis
+
+        self._mongodb = mongo_db
 
     @property
     def user_repo(self):
@@ -88,3 +90,7 @@ class Repos(object):
     @property
     def credit_card_repo(self):
         return self._credit_card_repo
+
+    @property
+    def operate_log_repo(self):
+        return self._operate_log_repo

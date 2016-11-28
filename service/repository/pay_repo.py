@@ -14,6 +14,7 @@
 
 from service.repository.base_repo import BaseRepo
 
+
 class PayRepo(BaseRepo):
     TABLE_NAME = 'sfm_pay'
 
@@ -22,4 +23,11 @@ class PayRepo(BaseRepo):
             insert into {} set water_id=%s, channel_id=%s, channel_water_id=%s, amount=%s, order_id=%s, time=%s, target_type=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, water_id, channel_id, channel_water_id, amount, order_id, time, target_type)
+        return res
+
+    def select_order_id(self, order_id):
+        sql = """
+            select * from {} where order_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.query(sql, order_id)
         return res

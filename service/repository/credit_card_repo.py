@@ -17,19 +17,23 @@
 from service.repository.base_repo import BaseRepo
 import logging
 from tornado.concurrent import run_on_executor
+import time
+from constant import *
 
 
 class CreditCardRepo(BaseRepo):
     TABLE_NAME = 'sfm_credit_card'
 
-    def __init__(self):
+    def __init__(self, *args):
         logging.info('init CreditCardRepo')
+        super(CreditCardRepo, self).__init__(*args)
 
     def insert(self, user_id, card_id, amount):
         sql = """
             insert into {} set user_id=%s, card_id=%s, amount=%s, remain_amount=%s
         """.format(self.TABLE_NAME)
         r_count = self.db.execute_rowcount(sql, user_id, card_id, amount, amount)
+        self.repos.operate_log_repo.insert(user_id, card_id, OP_LOG.type_card, OP_LOG.get_log_create_card(amount))
         return r_count
 
     def select(self, user_id):
@@ -44,6 +48,7 @@ class CreditCardRepo(BaseRepo):
             update {} set remain_amount=remain_amount+%s where card_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, cost_amount, card_id)
+        self.repos.operate_log_repo.insert('0', card_id, OP_LOG.type_card, OP_LOG.get_log_update_amount(cost_amount))
         return res
 
     @run_on_executor
@@ -67,3 +72,23 @@ class CreditCardRepo(BaseRepo):
                 """
         total = self.db.execute_rowcount(sql, user_name, mobile, channel, update_time_ed, update_time_st)
         return res, total
+
+    @run_on_executor
+    def set_card_amount(self, card_id, inc_amount):
+        sql = """
+            update {} set amount=amount+%s, remain_amount=remain_amount+%s, update_time=%s where card_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_rowcount(sql, inc_amount, inc_amount, time.time(), card_id)
+        self.repos.operate_log_repo.insert('0', card_id, OP_LOG.type_card, OP_LOG.get_log_set_amount_card(inc_amount))
+        return res
+
+    @run_on_executor
+    def select_by_card_id(self, card_id):
+        sql = """
+            select * from {} where card_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.get(sql, card_id)
+        return res
+
+
+

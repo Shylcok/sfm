@@ -137,7 +137,7 @@ class OrderHandler(BaseHandler):
         :param order_id:
         :return:
         """
-        res = yield self.context_services.order_service.delete_order(order_id)
+        res = yield self.context_services.order_service.delete_order(user_id, order_id)
         raise Return(res)
 
     @coroutine
@@ -149,7 +149,7 @@ class OrderHandler(BaseHandler):
         :param order_id:
         :return:
         """
-        res = yield self.context_services.order_service.confirm_order(order_id)
+        res = yield self.context_services.order_service.confirm_order(user_id, order_id)
         raise Return(res)
 
     @coroutine
@@ -163,7 +163,7 @@ class OrderHandler(BaseHandler):
         :param reason:
         :return:
         """
-        res = yield self.context_services.order_service.cancel_order(order_id, reason)
+        res = yield self.context_services.order_service.cancel_order(user_id, order_id, reason)
         raise Return(res)
 
     def pay_now(self, user_id, clientip, platform, order_id, type, use_balance, address_id):
@@ -228,9 +228,9 @@ class OrderHandler(BaseHandler):
         self.context_services.pay_sevice.refund(refund_params)
 
     @coroutine
-    @handler_decorator(perm=0, types={'order_id': str, 'logistics_id': str}, plain=False, async=True, finished=True)
-    def send_out(self, order_id, logistics_id):
-        res = yield self.context_services.order_service.send_out(order_id, logistics_id)
+    @handler_decorator(perm=0, types={'order_id': str, 'logistics_id': str, 'logistics': str}, plain=False, async=True, finished=True)
+    def send_out(self, order_id, logistics_id, logistics):
+        res = yield self.context_services.order_service.send_out(order_id, logistics_id, logistics)
         raise Return(res)
 
     @coroutine
@@ -241,4 +241,16 @@ class OrderHandler(BaseHandler):
              count=10):
         res = yield self.context_services.order_service.get_list(u_id, u_mobile, order_id, ctime_st, ctime_ed,
                                                                  order_type, page, count)
+        raise Return(res)
+
+    @coroutine
+    @handler_decorator(perm=0, types={'order_id': str}, plain=False, async=True, finished=True)
+    def detail(self, order_id):
+        res = yield self.context_services.order_service.get_detail(order_id)
+        raise Return(res)
+
+    @coroutine
+    @handler_decorator(perm=0, types={'order_id': str, 'admin_note': str}, plain=False, async=True, finished=True)
+    def add_admin_note(self, order_id, admin_note):
+        res = yield self.context_services.order_service.add_admin_note(order_id, admin_note)
         raise Return(res)

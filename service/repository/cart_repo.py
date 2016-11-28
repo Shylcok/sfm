@@ -20,8 +20,9 @@ from tornado.concurrent import run_on_executor
 class CartRepo(BaseRepo):
     TABLE_NAME = 'sfm_cart'
 
-    def __init__(self):
+    def __init__(self, *args):
         logging.info('init CartRepo')
+        super(CartRepo, self).__init__(CartRepo)
 
     def select_by_user_id(self, user_id):
         sql = """

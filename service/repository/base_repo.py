@@ -54,6 +54,9 @@ class BaseRepo(object):
 
     executor = ThreadPoolExecutor(50)
 
+    def __init__(self, repos):
+        self.repos = repos
+
     """属性装饰器,保证只读"""
     @property
     def db(self):

@@ -4,7 +4,7 @@
 """
 @version: v1.0
 @author: suyuan
-@license: 
+@license:
 @contact: suyuan@gmail.com
 @site: https://github.com/su6838354/sfm
 @software: PyCharm
@@ -20,8 +20,8 @@ from constant import *
 import json
 from utility.common import Common
 import contextlib
-from tornado.ioloop import IOLoop
 from tornado.gen import Return
+import traceback
 
 
 class CommitOrderError(Exception):
@@ -350,6 +350,7 @@ class OrderService(BaseService):
                 res
         except Exception, err:
             logging.error('提交订单操作失败:%s' % err)
+            traceback.print_exc()
             raise gen.Return({'code': 271, 'msg': '提交订单操作失败:%s' % err})
 
         """如果来自购物车,设置购物车中的status=0"""
@@ -420,13 +421,13 @@ class OrderService(BaseService):
             raise gen.Return(res)
 
     @coroutine
-    def delete_order(self, order_id):
-        res = yield self.context_repos.order_repo.delete_order(order_id)
+    def delete_order(self, user_id, order_id):
+        res = yield self.context_repos.order_repo.delete_order(user_id, order_id)
         raise gen.Return(res)
 
     @coroutine
-    def confirm_order(self, order_id):
-        res = yield self.context_repos.order_repo.update_state_3(order_id)
+    def confirm_order(self, user_id, order_id):
+        res = yield self.context_repos.order_repo.update_state_3(user_id, order_id)
         if res > 0:
             raise gen.Return({'code': 0, 'msg': '订单确认成功'})
         else:
@@ -434,8 +435,8 @@ class OrderService(BaseService):
             raise gen.Return({'code': 211, 'msg': '卖家可能还未发货,订单确认失败'})
 
     @coroutine
-    def cancel_order(self, order_id, reason):
-        res = yield self.context_repos.order_repo.update_state_4(order_id, reason)
+    def cancel_order(self, user_id, order_id, reason):
+        res = yield self.context_repos.order_repo.update_state_4(user_id, order_id, reason)
         if res > 0:
             raise gen.Return({'code': 0, 'msg': '订单取消成功'})
         else:
@@ -459,8 +460,8 @@ class OrderService(BaseService):
     """--------------后端服务——————————————————————————"""
 
     @coroutine
-    def send_out(self, order_id, logistics_id):
-        res = yield self.context_repos.order_repo.update_state_2(order_id, logistics_id)
+    def send_out(self, order_id, logistics_id, logistics):
+        res = yield self.context_repos.order_repo.update_state_2(order_id, logistics_id, logistics)
         if res > 0:
             raise gen.Return({'code': 0, 'msg': '确认发货'})
         else:
@@ -490,6 +491,31 @@ class OrderService(BaseService):
 
         res = {'orders': orders, 'pagination': self.pagination(total, page, count)}
         raise gen.Return(res)
+
+    @coroutine
+    def get_detail(self, order_id):
+        order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
+        user_id = order_info['user_id']
+        user_info = self.context_repos.user_repo.select_by_user_id(user_id)
+        address_id = order_info['address_id']
+        address_info = yield self.context_repos.address_repo.select_by_id(address_id)
+        sku_infos = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
+        pay_info = self.context_repos.pay_repo.select_order_id(order_id)
+        order_log_infos = self.context_repos.operate_log_repo.select_by_target_id(order_id)
+
+        res = {'order_info': order_info,
+               'user_info': user_info,
+               'address_info': address_info,
+               'sku_infos': sku_infos,
+               'pay_info': pay_info,
+               'order_log_infos': order_log_infos
+               }
+        raise Return(res)
+
+    @coroutine
+    def add_admin_note(self, order_id, admin_note):
+        res = yield self.context_repos.order_repo.add_admin_note(order_id, admin_note)
+        raise Return(res)
 
 
 if __name__ == "__main__":

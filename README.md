@@ -531,7 +531,8 @@
 
 		{
 		  "order_id": "14784316383",
-		  "logistics_id": "adbc111111"
+		  "logistics_id": "adbc111111",
+		  "logistics": "申通快递"
 		}
 		
 ####3.[后台]额度卡列表
@@ -550,6 +551,67 @@
 		 "page": 1,
 		 "count": 10
 		}
+
+####4.[后台]订单详情
+	/api/order/detail
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+
+		{
+		  "order_id":"14801432052"
+		}
+		
+####5.[后台]订单添加管理员备注
+	/api/order/add_admin_note
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+
+		{
+		  "order_id":"14801432052",
+		  "admin_note": "测试"
+		}
+		
+####6.[后台]设置额度卡
+	/api/credit_card/set_credit_cards
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+
+		{
+		  "order_id":"14801432052",
+		  "admin_note": "测试"
+		}
+		
+####7.[后台]额度卡详情
+	/api/credit_card/get_card_detail
+-	【权限】T
+-	【说明】
+
+	> 
+- 	【参数】
+
+		{
+		  "card_id": "216147913256010",
+		  "page": 1,
+		  "count": 10
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 	
 	

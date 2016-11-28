@@ -16,10 +16,15 @@ from service.repository.base_repo import BaseRepo
 from service.repository.base_repo import transaction
 from constant import *
 from tornado.concurrent import run_on_executor
+import logging
 
 
 class OrderRepo(BaseRepo):
     TABLE_NAME = 'sfm_order'
+
+    def __init__(self, *args):
+        logging.info('init order repo')
+        super(OrderRepo, self).__init__(*args)
 
     def insert(self, order_id, ship_amount, sku_amount, credit_amount, pay_amount, sku_count, user_id, address_id,
                user_note, card_id):
@@ -31,6 +36,7 @@ class OrderRepo(BaseRepo):
                                               time.time() + CONST_ORDER_OVER_DURATION,
                                               ship_amount, sku_amount, credit_amount, pay_amount, user_id, address_id,
                                               user_note, card_id)
+        self.repos.operate_log_repo.insert(user_id, order_id, OP_LOG.type_order, OP_LOG.log_generator_order)
         return lastrowid
 
     @run_on_executor
@@ -69,11 +75,18 @@ class OrderRepo(BaseRepo):
         return res
 
     @run_on_executor
-    def delete_order(self, order_id):
+    def delete_order(self, user_id, order_id):
+        """
+        删除订单
+        :param user_id:
+        :param order_id:
+        :return:
+        """
         sql = """
             update {} set status=0 WHERE order_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, order_id)
+        self.repos.operate_log_repo.insert(user_id, order_id, OP_LOG.type_order, OP_LOG.log_delete_order)
         return res
 
     @run_on_executor
@@ -87,25 +100,30 @@ class OrderRepo(BaseRepo):
             update {} set state=1 where order_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_lastrowid(sql, order_id)
+        self.repos.operate_log_repo.insert('0', order_id, OP_LOG.type_order, OP_LOG.log_after_pay_order)
         return res
 
     @run_on_executor
-    def update_state_2(self, order_id, logistics_id):
+    def update_state_2(self, order_id, logistics_id, logistics):
         """
         发货
+        :param logistics:
+        :param logistics_id:
         :param order_id:
         :return:
         """
         sql = """
-            update {} set state=2, logistics_id=%s where order_id=%s and state=1
+            update {} set state=2, logistics_id=%s, logistics=%s where order_id=%s and state=1
         """.format(self.TABLE_NAME)
-        res = self.db.execute_rowcount(sql, logistics_id, order_id)
+        res = self.db.execute_rowcount(sql, logistics_id, logistics, order_id)
+        self.repos.operate_log_repo.insert('0', order_id, OP_LOG.type_order, OP_LOG.log_send_out_order)
         return res
 
     @run_on_executor
-    def update_state_3(self, order_id):
+    def update_state_3(self, user_id, order_id):
         """
         确认收货
+        :param user_id:
         :param order_id:
         :return:
         """
@@ -113,10 +131,11 @@ class OrderRepo(BaseRepo):
             update {} set state=3 where order_id=%s and state=2
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, order_id)
+        self.repos.operate_log_repo.insert(user_id, order_id, OP_LOG.type_order, OP_LOG.log_confirm_order)
         return res
 
     @run_on_executor
-    def update_state_4(self, order_id, reason):
+    def update_state_4(self, user_id, order_id, reason):
         """
         取消订单
         :param order_id:
@@ -127,6 +146,7 @@ class OrderRepo(BaseRepo):
             update {} set state=4, reason=%s WHERE order_id=%s and state=0
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, reason, order_id)
+        self.repos.operate_log_repo.insert(user_id, order_id, OP_LOG.type_order, OP_LOG.log_cancel_order)
         return res
 
     @run_on_executor
@@ -134,13 +154,13 @@ class OrderRepo(BaseRepo):
         """
         订单过期
         :param order_id:
-        :param reason:
         :return:
         """
         sql = """
             update {} set state=5 WHERE order_id=%s and state=0
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, order_id)
+        self.repos.operate_log_repo.insert('0', order_id, OP_LOG.type_order, OP_LOG.log_overtime_order)
         return res
 
     @run_on_executor
@@ -154,6 +174,7 @@ class OrderRepo(BaseRepo):
             update {} set credit_card_state=1 WHERE order_id=%s
         """.format(self.TABLE_NAME)
         res = self.db.execute_rowcount(sql, order_id)
+        self.repos.operate_log_repo.insert('0', order_id, OP_LOG.type_order, OP_LOG.log_after_card_pay_order)
         return res
 
     @run_on_executor
@@ -262,6 +283,13 @@ class OrderRepo(BaseRepo):
         total = self.db.execute_rowcount(sql, u_id, u_mobile, order_id, ctime_st, ctime_ed)
         return res, total
 
+    @run_on_executor
+    def add_admin_note(self, order_id, admin_note):
+        sql = """
+            update {} set admin_note=%s where order_id=%s
+        """.format(self.TABLE_NAME)
+        res = self.db.execute_rowcount(sql, admin_note, order_id)
+        return res
 
     def test(self):
         with transaction() as trans:

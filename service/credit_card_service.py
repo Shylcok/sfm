@@ -76,9 +76,34 @@ class CreditCardService(BaseService):
         self.services.order_overtime_task_service.card_pay_celery(order_id, card_id)
         raise Return(res)
 
+    """--------------后台------------------"""
+
     @coroutine
     def get_credit_cards(self, u_name, u_mobile, channel, update_time_st, update_time_dt, page,
                          count):
         user_cards, total = yield self.context_repos.credit_card_repo.select_user_card(u_name, u_mobile, channel, update_time_st, update_time_dt, page, count)
         res = {'credit_cards': user_cards, 'pagination': self.pagination(total, page, count)}
         raise Return(res)
+
+    @coroutine
+    def set_card_amount(self, card_id, inc_amount):
+        res = yield self.context_repos.credit_card_repo.set_card_amount(card_id, inc_amount)
+        raise Return(res)
+
+    @coroutine
+    def get_card_detail(self, card_id, page, count):
+        card_info = yield self.context_repos.credit_card_repo.select_by_card_id(card_id)
+        user_id = card_info['user_id']
+        user_info = self.context_repos.user_repo.select_by_user_id(user_id)
+        card_order_infos, total = yield self.context_repos.order_repo.select_by_credit_card_id_all(card_id, page, count)
+        card_log_infos = self.context_repos.operate_log_repo.select_by_target_id(card_id)
+        res = {
+            'user_info': user_info,
+            'card_info': card_info,
+            'card_order_infos': card_order_infos,
+            'card_order_pagination': self.pagination(total, page, count),
+            'card_log_infos': card_log_infos
+        }
+        raise Return(res)
+
+
