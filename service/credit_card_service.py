@@ -13,7 +13,7 @@
 """
 
 from base_service import BaseService
-from constant import GENERATOR_CREDIT_CARD_ID, CREDIT_CARD_AMOUNT
+from constant import *
 import logging
 from tornado.gen import coroutine, Return
 
@@ -50,6 +50,7 @@ class CreditCardService(BaseService):
             order_id = order['order_id']
             skus = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
             order['skus'] = skus
+            order['refund_time'] = int(order['ctime']) + int(CONST_CARD_BORROW_DURATION)
 
         credit_card.update({'orders': orders})
         res = {'credit_card': credit_card, 'pagination': self.pagination(total, page, count)}

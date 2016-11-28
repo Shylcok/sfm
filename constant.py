@@ -30,7 +30,8 @@ CONST_ORDER_OVER_DURATION_CELERY_RETRY = 3  # 3s后继续尝试
 CONST_ORDER_SHIP_AMOUNT = 0  # 1000  # 默认邮费 10 元
 
 """催款消息队列"""
-CONST_CARD_BORROW_DURATION_CELERY = 60 * 1  # 60 * 60 * 24 * 60 # 60天后过期进行一次催款
+CONST_CARD_BORROW_DURATION_CELERY = 60 * 1  # 60 * 60 * 24 * 63 # 60天后过期进行一次催款
+CONST_CARD_BORROW_DURATION = 60 * 1  # 60 * 60 * 24 * 66 # 60天后过期进行一次催款
 
 
 # 订单号
