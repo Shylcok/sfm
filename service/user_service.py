@@ -114,12 +114,12 @@ class UserService(BaseService):
         else:
             return {'code': 114, 'msg': '密码修改发生异常'}
 
-    def modify_user_name(self, user_id, new_user_name):
+    def modify_user_name(self, user_id, new_user_name, sex):
         user = self.context_repos.user_repo.select_by_user_name(new_user_name)
         if user is not None:
             return {'code': 115, 'msg': '用户名已存在,修改用户名失败'}
 
-        last_row_id = self.context_repos.user_repo.update_user_name(user_id, new_user_name)
+        last_row_id = self.context_repos.user_repo.update_user_name(user_id, new_user_name, sex)
         if last_row_id > 0:
             return {'code': 0, 'msg': '用户名修改成功'}
         else:

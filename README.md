@@ -123,7 +123,8 @@
 -	【参数】
 
 		{
-		  "new_user_name":"suyuan"
+		  "new_user_name":"suyuan",
+		  "sex": 1
 		}
 
 ####7.获取用户信息
@@ -614,8 +615,8 @@
 - 	【参数】
 
 		{
-		  "order_id":"14801432052",
-		  "admin_note": "测试"
+		  "card_id":"110",
+		  "inc_amount": 100
 		}
 		
 ####7.[后台]额度卡详情

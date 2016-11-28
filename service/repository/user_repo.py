@@ -71,9 +71,9 @@ class UserRepo(BaseRepo):
         """.format(self.TABLE_NAME)
         return self.db.execute_rowcount(sql, new_pwd_md5, user_id)
 
-    def update_user_name(self, user_id, new_user_name):
+    def update_user_name(self, user_id, new_user_name, sex):
         sql = """
-            update {} set user_name=%s WHERE id=%s
+            update {} set user_name=%s, sex=%s WHERE id=%s
         """.format(self.TABLE_NAME)
-        return self.db.execute_rowcount(sql, new_user_name, user_id)
+        return self.db.execute_rowcount(sql, new_user_name, sex, user_id)
 

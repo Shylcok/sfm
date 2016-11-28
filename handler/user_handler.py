@@ -101,15 +101,15 @@ class UserHandler(BaseHandler):
             self.logout()
         return res
 
-    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str}, plain=False, async=False, finished=True)
-    def modify_user_name(self, user_id, new_user_name):
+    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str, 'sex': int}, plain=False, async=False, finished=True)
+    def modify_user_name(self, user_id, new_user_name, sex):
         """
         修改用户名
         :param user_id:
         :param new_user_name:
         :return:
         """
-        res = self.context_services.user_service.modify_user_name(user_id, new_user_name)
+        res = self.context_services.user_service.modify_user_name(user_id, new_user_name, sex)
         return res
 
     @handler_decorator(perm=1,
