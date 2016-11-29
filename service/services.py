@@ -24,7 +24,7 @@ import logging
 
 class Services(object):
     def __init__(self):
-        logging.info('=====> init services')
+        logging.info('=====> README.md services')
         self._user_service = UserService(self)
         self._cart_service = CartService(self)
         self._order_service = OrderService(self)

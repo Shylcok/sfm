@@ -21,7 +21,7 @@ class AddressRepo(BaseRepo):
     TABLE_NAME = 'sfm_address'
 
     def __init__(self, *args):
-        logging.info('init AddressRepo')
+        logging.info('README.md AddressRepo')
         super(AddressRepo, self).__init__(*args)
 
     def select_by_user_id(self, user_id):

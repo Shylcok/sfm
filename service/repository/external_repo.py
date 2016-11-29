@@ -25,7 +25,7 @@ from base_repo import BaseRepo
 class ExternalRepo(BaseRepo):
 
     def __init__(self, *args):
-        logging.info('init external repo')
+        logging.info('README.md external repo')
         super(ExternalRepo, self).__init__(args)
 
     @coroutine

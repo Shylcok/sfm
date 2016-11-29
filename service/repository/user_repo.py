@@ -19,7 +19,7 @@ class UserRepo(BaseRepo):
     TABLE_NAME = 'sfm_user'
 
     def __init__(self, *args):
-        logging.info('init UserRepo')
+        logging.info('README.md UserRepo')
         super(UserRepo, self).__init__(args)
 
     def select_by_user_id(self, user_id):

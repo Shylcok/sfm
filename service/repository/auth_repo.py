@@ -23,7 +23,7 @@ class AuthRepo(BaseRepo):
     TABLE_NAME = 'sfm_auth'
 
     def __init__(self, *args):
-        logging.info('init AuthRepo')
+        logging.info('README.md AuthRepo')
         super(AuthRepo, self).__init__(*args)
 
     def select_by_user_id(self, user_id):

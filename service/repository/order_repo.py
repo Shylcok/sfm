@@ -23,7 +23,7 @@ class OrderRepo(BaseRepo):
     TABLE_NAME = 'sfm_order'
 
     def __init__(self, *args):
-        logging.info('init order repo')
+        logging.info('README.md order repo')
         super(OrderRepo, self).__init__(*args)
 
     def insert(self, order_id, ship_amount, sku_amount, credit_amount, pay_amount, sku_count, user_id, address_id,

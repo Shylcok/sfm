@@ -21,7 +21,7 @@ class CartRepo(BaseRepo):
     TABLE_NAME = 'sfm_cart'
 
     def __init__(self, *args):
-        logging.info('init CartRepo')
+        logging.info('README.md CartRepo')
         super(CartRepo, self).__init__(CartRepo)
 
     def select_by_user_id(self, user_id):

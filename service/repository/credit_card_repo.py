@@ -25,7 +25,7 @@ class CreditCardRepo(BaseRepo):
     TABLE_NAME = 'sfm_credit_card'
 
     def __init__(self, *args):
-        logging.info('init CreditCardRepo')
+        logging.info('README.md CreditCardRepo')
         super(CreditCardRepo, self).__init__(*args)
 
     def insert(self, user_id, card_id, amount):

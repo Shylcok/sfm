@@ -22,7 +22,7 @@ class OperateLogRepo(BaseRepo):
     TABLE_NAME = 'sfm_operate_log'
 
     def __init__(self, *args):
-        logging.info('init operator repo')
+        logging.info('README.md operator repo')
         super(OperateLogRepo, self).__init__(args)
 
     def insert(self, user_id, target_id, target_type, log):

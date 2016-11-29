@@ -40,9 +40,9 @@ class CreditCardHandler(BaseHandler):
 
     @gen.coroutine
     @handler_decorator(perm=0, types={'u_name': str, 'u_mobile': str, 'channel': str, 'update_time_st': int,
-                                      'update_time_dt': int, 'page': int, 'count': int}, plain=False, async=True,
+                                      'update_time_ed': int, 'page': int, 'count': int}, plain=False, async=True,
                        finished=True)
-    def get_credit_cards(self, u_name='', u_mobile='', channel='', update_time_st=0, update_time_dt=time.time(), page=1,
+    def get_credit_cards(self, u_name='', u_mobile='', channel='', update_time_st=0, update_time_ed=time.time(), page=1,
                          count=10):
         """
         后台给信用卡数据
@@ -50,13 +50,13 @@ class CreditCardHandler(BaseHandler):
         :param u_name:
         :param channel:
         :param update_time_st:
-        :param update_time_dt:
+        :param update_time_ed:
         :param page:
         :param count:
         :return:
         """
         res = yield self.context_services.credit_card_service.get_credit_cards(u_name, u_mobile, channel,
-                                                                               update_time_st, update_time_dt, page,
+                                                                               update_time_st, update_time_ed, page,
                                                                                count)
         raise gen.Return(res)
 
