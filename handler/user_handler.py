@@ -97,11 +97,12 @@ class UserHandler(BaseHandler):
         :return:
         """
         res = self.context_services.user_service.modify_pwd(user_id, old_pwd, new_pwd)
-        if res['code'] == 0:
-            self.logout()
+        # if res['code'] == 0:
+        # self.logout()
         return res
 
-    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str, 'sex': int}, plain=False, async=False, finished=True)
+    @handler_decorator(perm=1, types={'user_id': str, 'new_user_name': str, 'sex': int}, plain=False, async=False,
+                       finished=True)
     def modify_user_info(self, user_id, new_user_name, sex):
         """
         修改用户名
