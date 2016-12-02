@@ -15,7 +15,7 @@
 from service.base_service import BaseService
 import hashlib
 import json
-import sms_ali
+import sms
 from utility import aes
 from settings import CONFIG
 import random
@@ -56,16 +56,15 @@ class UserService(BaseService):
         x = random.choice(chars), random.choice(chars), random.choice(chars), random.choice(chars)
         verify_code = "".join(x)
         # self.set_cookie('sfm_sms_verify', verifyCode, httponly=True, expires=time.time() + 60 * 15)
-        res = sms_ali.send_sms(verify_code, mobile)
-        res_tuple = res.split(',')
-        if res_tuple[1] == '0':
+        success = sms.send_sms("您的本次验证码:%s,5分钟内输入有效" % verify_code, mobile)
+        if success:
             res = self.context_repos.sms_redis.set(mobile, verify_code, ex=300)
             if res is True:
                 return {'code': 0, 'msg': '验证码发送成功'}
             else:
                 return {'code': 0, 'msg': '验证码发送异常, redis失联'}
         else:
-            return {'code': res_tuple[1], 'msg': '验证码发送失败,具体原因参见云通讯官网'}
+            return {'code': success, 'msg': '验证码发送失败,具体原因参见云通讯官网'}
 
     def signup(self, mobile, pwd, sms_verify):
         sms_verify_old = self.context_repos.sms_redis.get(mobile)
