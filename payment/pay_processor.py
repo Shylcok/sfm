@@ -25,7 +25,7 @@ import time
 
 class PayProcessor(object):
     def __init__(self):
-        pingpp.api_key = 'sk_live_L0CqXLf1SyfL0GO4a9zv1yHS'
+        pingpp.api_key = 'sk_live_504uHKH4u5SKPSmHWHvb1Oq9'
         pingpp.private_key_path = os.path.dirname(__file__) + 'your_rsa_private_key.pem'
 
     @staticmethod
