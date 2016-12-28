@@ -44,7 +44,7 @@ def GENERATOR_CREDIT_CARD_ID(user_id):
     ID = '216' + str(int(time.time())) + str(user_id)
     return ID[0: 15]
 
-CREDIT_CARD_AMOUNT = 66600  # 666 元
+CREDIT_CARD_AMOUNT = 0  # 666 元
 CREDIT_CARD_DELAY = 60 * 60 * 24 * 60  # 60天
 
 TARGET_TYPE_PAY = 'pay'
