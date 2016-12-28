@@ -47,8 +47,8 @@ CONFIG = {
     },
     'LOG_PATH': './sfm-8089.log',
     'pay': {
-        'app_id': 'app_9CO8q1TGCK00P44G',
-        'api_key': 'sk_live_L0CqXLf1SyfL0GO4a9zv1yHS',
+        'app_id': 'app_9GSOi5CmzPWDjHq5',
+        'api_key': 'sk_live_504uHKH4u5SKPSmHWHvb1Oq9',
     },
     'token_secret_key': 'qksytijhjhhdhha%&*&O&&(*',
     'AESKEY': 'ovgNwKHpqmdOTYgI',
