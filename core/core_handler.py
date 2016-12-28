@@ -61,7 +61,8 @@ class CoreHandler(tornado.web.RequestHandler):
         if 'Origin' in self.request.headers:
             host = self.request.headers['Origin']
             
-        domain = "dengmi.info" #host[11:18]  # 临时设置cookie作用域名
+        #domain = "dengmi.info" #host[11:18]  # 临时设置cookie作用域名
+        domain = "shoufumai.net" #host[11:18]  # 临时设置cookie作用域名
         return super(CoreHandler, self).set_cookie(name, value, domain, expires, path,
                                                    expires_days, **kwargs)
 
