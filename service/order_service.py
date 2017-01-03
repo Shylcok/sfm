@@ -63,9 +63,9 @@ class OrderGenerator(BaseService):
             sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
             if sku_info:
                 """打开首付验证"""
-                if int(sku['first_price']) > int(sku_info['firstPay'][-1]):
+                if int(sku['first_price']) < int(sku_info['firstPay'][-1]):
                     logging.error(
-                        '首付价格超过最高首付, first_price=%s, firstPay=%s' % (sku['first_price'], sku_info['firstPay']))
+                        '首付价格低于最低首付, first_price=%s, firstPay=%s' % (sku['first_price'], sku_info['firstPay']))
                     raise gen.Return(False)
                 sku_info['order_sku_id'] = sku_id
                 sku_info['order_sku_count'] = sku_count
@@ -103,8 +103,8 @@ class OrderGenerator(BaseService):
                 sku_info = yield self.context_repos.expernal_repo.get_sku_info(sku_id)
                 if sku_info:
                     """打开首付验证"""
-                    if int(cart['first_price']) > int(sku_info['firstPay'][-1]):
-                        logging.error('首付价格超过最高首付, first_price=%s, firstPay=%s' % (
+                    if int(cart['first_price']) < int(sku_info['firstPay'][-1]):
+                        logging.error('首付价格低于最低首付, first_price=%s, firstPay=%s' % (
                             cart['first_price'], sku_info['firstPay']))
                         raise gen.Return(False)
                     sku_info['order_sku_id'] = sku_id
@@ -451,8 +451,8 @@ class OrderService(BaseService):
     def get_order(self, order_id):
         order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         order_sku_infos = yield self.context_repos.sku_order_repo.select_by_order_id(order_id)
-        if order_sku_infos is None:
-            raise gen.Return({'code': 218, 'msg': '订单不存在'})
+        if order_sku_infos is None or order_info is None:
+            raise gen.Return({'code': 218, 'msg': '订单%s不存在' % order_id})
         order_info['skus_info'] = order_sku_infos
         address_info = yield self.context_repos.address_repo.select_by_id(order_info['address_id'])
         order_info['address_info'] = address_info
@@ -493,7 +493,7 @@ class OrderService(BaseService):
             orders, total = yield self.context_repos.order_repo.select_for_background(u_id, u_mobile, order_id, state,
                                                                                       ctime_st, ctime_ed, page, count)
 
-        res = {'orders': orders, 'pagination': self.pagination(total, page, count)}
+        res = {'orders': orders, 'pagination': Common().pagination(total, page, count)}
         raise gen.Return(res)
 
     @coroutine

@@ -71,7 +71,7 @@ class OrderOvertimeTaskService(BaseService):
         card_amount = order_info['credit_amount']
         order_id = order_info['order_id']
         mobile = self.context_repos.user_repo.select_by_user_id(order_info['user_id'])
-        msg = '你有一条还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount)
+        msg = '还款已达到60天, 订单号:%s, 还款金额:%s' % (order_id, -card_amount)
         success = sms.send_sms(msg, mobile)
         if success:
             logging.info('发送催款短信, order_id=%s, msg=%s, mobile=%s' % (order_id, msg, mobile))

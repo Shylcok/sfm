@@ -30,9 +30,9 @@ class CreditCardRepo(BaseRepo):
 
     def insert(self, user_id, card_id, amount):
         sql = """
-            insert into {} set user_id=%s, card_id=%s, amount=%s, remain_amount=%s
+            insert into {} set user_id=%s, card_id=%s, amount=%s, remain_amount=%s, update_time=%s
         """.format(self.TABLE_NAME)
-        r_count = self.db.execute_rowcount(sql, user_id, card_id, amount, amount)
+        r_count = self.db.execute_rowcount(sql, user_id, card_id, amount, amount, time.time())
         self.repos.operate_log_repo.insert(user_id, card_id, OP_LOG.type_card, OP_LOG.get_log_create_card(amount))
         return r_count
 

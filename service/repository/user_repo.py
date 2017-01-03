@@ -61,7 +61,7 @@ class UserRepo(BaseRepo):
 
     def insert(self, mobile, pwd_md5):
         sql = """
-          insert into {} (mobile, user_name, pwd_md5, register_dt) values (%s, %s, %s, %s)
+          insert into {} (mobile, user_name, pwd_md5, register_dt, sex) values (%s, %s, %s, %s, -1)
         """.format(self.TABLE_NAME)
         return self.db.execute_lastrowid(sql, mobile, mobile, pwd_md5, time.time())
 

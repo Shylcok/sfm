@@ -56,7 +56,7 @@ class UserService(BaseService):
         x = random.choice(chars), random.choice(chars), random.choice(chars), random.choice(chars)
         verify_code = "".join(x)
         # self.set_cookie('sfm_sms_verify', verifyCode, httponly=True, expires=time.time() + 60 * 15)
-        success = sms.send_sms("您的本次验证码:%s,5分钟内输入有效" % verify_code, mobile)
+        success = sms.send_sms("您好，您的验证码是:%s，验证码在3分钟内有效，如不是本人操作，请忽略。" % verify_code, mobile)
         if success:
             res = self.context_repos.sms_redis.set(mobile, verify_code, ex=300)
             if res is True:
@@ -87,6 +87,9 @@ class UserService(BaseService):
             return {'code': 111, 'msg': '注册失败,请重试'}
 
     def signin(self, mobile_user_name, pwd):
+	user_info = self.context_repos.user_repo.select_by_mobile(mobile_user_name)
+        if user_info is None:
+            return {'code': 121, 'msg': '该手机号码未注册'}, None
         pwd_md5 = hashlib.md5(pwd).hexdigest()
         user = self.context_repos.user_repo.select_by_mobile_pwd_md5(mobile_user_name, pwd_md5)
         if user is None:
