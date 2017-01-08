@@ -62,7 +62,7 @@ class PayService(BaseService):
         order_id = pay_params['order_id']
         channel = pay_params['channel']
         success_url = pay_params['success_url']
-        order_info = self.context_repos.order_repo.select_by_order_id(order_id)
+        order_info = yield self.context_repos.order_repo.select_by_order_id(order_id)
         if order_info['state'] == 1 and order_info['credit_card_state'] == 0:
             credit_amount = -order_info['credit_amount']
         else:
@@ -87,7 +87,7 @@ class PayService(BaseService):
             )
         elif pay_params['channel'] == 'wx_pub_qr':
             pay_info['extra'] = dict(
-                product_id=pay_params['product_id']
+                product_id=order_id  # pay_params['product_id']
             )
         res = PayProcessor().pay(pay_info)
         raise Return(res)
