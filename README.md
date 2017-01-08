@@ -548,6 +548,11 @@
 		complete		已完成 3
 		cancel			已取消 4
 		overtime		已过期 5
+	>u_id：   用户id    
+	
+	>u_mobile 用户电话号码  
+	
+	>order_id 订单号
 
 ####2.[后台]发货,需要输入物流信息id
 	/api/order/send_out
