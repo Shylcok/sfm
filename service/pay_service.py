@@ -20,6 +20,7 @@ from settings import CONFIG
 from tornado.gen import coroutine
 from tornado.gen import Return
 import random
+import time
 
 class PayService(BaseService):
     def __init__(self, services):
@@ -69,7 +70,7 @@ class PayService(BaseService):
             raise Return({'code': 310, 'msg': '订单状态不正确, 不能进行还卡'})
 
         pay_info = {}
-        pay_info['order_no'] = order_id + order_info['credit_card_id'][-5:-1]  # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
+        pay_info['order_no'] = order_id + '_' + time.time()  # 11 位 商户订单号，适配每个渠道对此参数的要求，必须在商户系统内唯,alipay : 1-64 位，  wx : 2-32 位
         pay_info['app'] = dict(id=CONFIG['pay']['app_id'])  # 支付使用的  app 对象的  id
         pay_info['channel'] = channel  # alipay_pc_direct	支付宝 PC 网页支付;wx_pub_qr 微信公众号扫码支付
         pay_info['amount'] = credit_amount  # 还款总金额（必须大于0

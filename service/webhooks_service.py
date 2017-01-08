@@ -43,7 +43,8 @@ class WebhooksService(BaseService):
 
             if pay_type == "order_pay":
                 """处理下单支付"""
-                order_id = order_data['order_no']
+                order_no = order_data['order_no']
+                order_id = order_no.split('_')[0]  # 内部定义
                 amount = order_data['amount']
                 water_id = order_data['transaction_no']
                 channel_id = self.channel_ids[order_data['channel']]
